@@ -8,6 +8,7 @@ from src.registration import *
 from src.utils import get_token
 from src.default_commands import cmd_menu, cmd_start, handle_button_click
 
+
 '''
     Загрузка токена бота из файла .env
     В файле .env:
@@ -28,9 +29,11 @@ dp.message.register(process_height, RegistrationStates.waiting_for_height)
 dp.message.register(process_weight, RegistrationStates.waiting_for_weight)
 dp.message.register(handle_button_click)
 
+
 # Запуск бота
 async def main():
     await dp.start_polling(bot)
+
 
 if __name__ == "__main__":
     print("Bot is running")
