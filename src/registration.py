@@ -21,7 +21,7 @@ def check_user_registered(user_id):
     return None
 
 # Определение состояния для регистрации
-class Registration(StatesGroup):
+class RegistrationStates(StatesGroup):
     waiting_for_name = State()
     waiting_for_age = State()
     waiting_for_height = State()
@@ -34,12 +34,12 @@ async def cmd_start(message: types.Message, state: FSMContext):
         await message.answer(f"С возвращением, {user_name}!")
     else:
         await message.answer("Добро пожаловать! Давайте начнем регистрацию. Как вас зовут?")
-        await state.set_state(Registration.waiting_for_name)
+        await state.set_state(RegistrationStates.waiting_for_name)
 
 async def process_name(message: types.Message, state: FSMContext):
     await state.update_data(name=message.text)
     await message.answer("Супер! Напишите, пожалуйста, сколько вам полных лет.")
-    await state.set_state(Registration.waiting_for_age)
+    await state.set_state(RegistrationStates.waiting_for_age)
     
 async def process_age(message: types.Message, state: FSMContext):
     if not message.text.isdigit():
@@ -48,7 +48,7 @@ async def process_age(message: types.Message, state: FSMContext):
 
     await state.update_data(age=int(message.text))
     await message.answer("Отлично! Укажите ваш рост в сантиметрах.")
-    await state.set_state(Registration.waiting_for_height)
+    await state.set_state(RegistrationStates.waiting_for_height)
 
 async def process_height(message: types.Message, state: FSMContext):
     if not message.text.isdigit():
@@ -57,7 +57,7 @@ async def process_height(message: types.Message, state: FSMContext):
 
     await state.update_data(height=int(message.text))
     await message.answer("Хорошо! Теперь введите ваш вес в килограммах.")
-    await state.set_state(Registration.waiting_for_weight)
+    await state.set_state(RegistrationStates.waiting_for_weight)
 
 async def process_weight(message: types.Message, state: FSMContext):
     if not message.text.isdigit():
