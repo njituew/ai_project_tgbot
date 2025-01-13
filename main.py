@@ -4,7 +4,7 @@ from aiogram.fsm.storage.memory import MemoryStorage
 from aiogram.filters import CommandStart, Command
 from src.registration import *
 from src.utils import get_token
-from src.default_commands import cmd_menu, cmd_start, handle_button_click
+from src.default_commands import cmd_menu, cmd_start, handle_button_click, set_bot_commands
 
 
 '''
@@ -30,6 +30,7 @@ dp.message.register(handle_button_click)
 
 # Запуск бота
 async def main():
+    await set_bot_commands(bot)
     await dp.start_polling(bot)
 
 

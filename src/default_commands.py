@@ -1,6 +1,6 @@
-from aiogram import types
+from aiogram import Bot, types
 from aiogram.fsm.context import FSMContext
-from aiogram.types import ReplyKeyboardMarkup, KeyboardButton
+from aiogram.types import ReplyKeyboardMarkup, KeyboardButton, BotCommand
 from src.registration import *
 
 
@@ -37,3 +37,11 @@ async def handle_button_click(message: types.Message):
     text = message.text
     if text in ("Создать тренировку 🏋️‍♂️", "Упражнения 📚", "Моя статистика 📈"):
         await message.answer(f"{text}")
+
+
+async def set_bot_commands(bot: Bot):
+    commands = [
+        BotCommand(command="start", description="Начать работу с ботом"),
+        BotCommand(command="menu", description="Открыть главное меню"),
+    ]
+    await bot.set_my_commands(commands)
