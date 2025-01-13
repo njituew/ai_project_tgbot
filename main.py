@@ -1,9 +1,7 @@
 import asyncio
-from aiogram import Bot, Dispatcher, types
+from aiogram import Bot, Dispatcher
 from aiogram.fsm.storage.memory import MemoryStorage
 from aiogram.filters import CommandStart, Command
-from aiogram.fsm.context import FSMContext
-from aiogram.types import ReplyKeyboardMarkup, KeyboardButton
 from src.registration import *
 from src.utils import get_token
 from src.default_commands import cmd_menu, cmd_start, handle_button_click

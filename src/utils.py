@@ -22,16 +22,13 @@ def get_token() -> str:
 def create_table(file_path: str) -> None:
     if not os.path.exists(file_path):
         os.makedirs(os.path.dirname(file_path), exist_ok=True)
-        df = pd.DataFrame(columns=["ID", "Name", "Age", "Height", "Weight"])
+        df = pd.DataFrame(columns=["ID", "Name", "Age", "Height", "Weight", "BMI"])
         df.to_excel(file_path, index=False, engine="openpyxl")
 
 
 '''
-Функция для проверки регистрации пользователя в книге Excel
+Функция для расчета ИМТ
 '''
-def check_registered(excel_path: str, user_id: str) -> str | None:
-    df = pd.read_excel(excel_path)  #, engine="openpyxl"
-    user = df[df["ID"] == user_id]
-    if not user.empty:
-        return user.iloc[0]["Name"]
-    return None
+def calculate_bmi(height: int, weight: int) -> float:
+    bmi = weight / (height / 100) ** 2
+    return round(bmi, 1)    # чтобы была 1 цифра после запятой

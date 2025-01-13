@@ -2,7 +2,6 @@ from aiogram import types
 from aiogram.fsm.context import FSMContext
 from aiogram.types import ReplyKeyboardMarkup, KeyboardButton
 from src.registration import *
-from src.utils import check_registered
 
 
 '''
@@ -10,7 +9,7 @@ from src.utils import check_registered
 '''
 async def cmd_start(message: types.Message, state: FSMContext):
     user_id = message.from_user.id
-    user_name = check_registered("data/users.xlsx", user_id)
+    user_name = check_registered(user_id)
     if user_name:
         await message.answer(f"С возвращением, {user_name}!")
     else:
