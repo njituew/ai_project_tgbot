@@ -17,7 +17,7 @@ def get_token() -> str:
 
 
 '''
-Функция для создания (если его нет) книги по пути file_path
+Функция для создания (если её нет) книги по пути file_path
 '''
 def create_table(file_path: str) -> None:
     if not os.path.exists(file_path):
