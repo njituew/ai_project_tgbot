@@ -28,6 +28,7 @@ async def cmd_start(message: types.Message, state: FSMContext):
 
 dp.message.register(cmd_start, CommandStart())
 dp.message.register(process_name, Registration.waiting_for_name)
+dp.message.register(process_age, Registration.waiting_for_age)
 dp.message.register(process_height, Registration.waiting_for_height)
 dp.message.register(process_weight, Registration.waiting_for_weight)
 

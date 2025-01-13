@@ -10,7 +10,7 @@ EXCEL_FILE = "data/users.xlsx"
 # Убедимся, что файл Excel существует или создадим его
 if not os.path.exists(EXCEL_FILE):
     os.makedirs(os.path.dirname(EXCEL_FILE), exist_ok=True)
-    df = pd.DataFrame(columns=["ID", "Name", "Height", "Weight"])
+    df = pd.DataFrame(columns=["ID", "Name", "Age", "Height", "Weight"])
     df.to_excel(EXCEL_FILE, index=False, engine="openpyxl")
 
 def check_user_registered(user_id):
@@ -23,6 +23,7 @@ def check_user_registered(user_id):
 # Определение состояния для регистрации
 class Registration(StatesGroup):
     waiting_for_name = State()
+    waiting_for_age = State()
     waiting_for_height = State()
     waiting_for_weight = State()
 
@@ -37,6 +38,15 @@ async def cmd_start(message: types.Message, state: FSMContext):
 
 async def process_name(message: types.Message, state: FSMContext):
     await state.update_data(name=message.text)
+    await message.answer("Супер! Напишите, пожалуйста, сколько вам полных лет.")
+    await state.set_state(Registration.waiting_for_age)
+    
+async def process_age(message: types.Message, state: FSMContext):
+    if not message.text.isdigit():
+        await message.answer("Пожалуйста, укажите возраст числом.")
+        return
+
+    await state.update_data(age=int(message.text))
     await message.answer("Отлично! Укажите ваш рост в сантиметрах.")
     await state.set_state(Registration.waiting_for_height)
 
@@ -61,6 +71,7 @@ async def process_weight(message: types.Message, state: FSMContext):
     df = pd.read_excel(EXCEL_FILE, engine="openpyxl")
     new_data = pd.DataFrame([{
         "ID": message.from_user.id,
+        "Age": user_data["age"],
         "Name": user_data["name"],
         "Height": user_data["height"],
         "Weight": user_data["weight"]
