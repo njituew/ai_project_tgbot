@@ -79,6 +79,7 @@ async def process_weight(message: types.Message, state: FSMContext):
     await message.answer(
         """
         Спасибо за регистрацию! Ваши данные сохранены.
+        
         /menu - открыть меню бота
         """
     )
