@@ -5,7 +5,7 @@ from aiogram.filters import CommandStart, Command
 from src.registration import *
 from src.utils import get_bot_token
 from src.default_commands import cmd_menu, cmd_start, handle_button_click, set_bot_commands
-from src.survey_for_training import start_survey, set_goal, set_level, set_location, TrainingSurvey
+from src.survey_for_training import start_survey, new_training, set_goal, set_level, set_location, TrainingSurvey
 
 
 '''
@@ -27,6 +27,7 @@ dp.message.register(process_age, RegistrationStates.waiting_for_age)
 dp.message.register(process_height, RegistrationStates.waiting_for_height)
 dp.message.register(process_weight, RegistrationStates.waiting_for_weight)
 dp.message.register(start_survey, F.text == "Создать тренировку 🏋️‍♂️")
+dp.callback_query.register(new_training, TrainingSurvey.new_training)
 dp.callback_query.register(set_goal, TrainingSurvey.goal)
 dp.callback_query.register(set_level, TrainingSurvey.level)
 dp.callback_query.register(set_location, TrainingSurvey.location)
