@@ -76,5 +76,10 @@ async def process_weight(message: types.Message, state: FSMContext):
     df = pd.concat([df, new_data], ignore_index=True)
     df.to_excel(EXCEL_FILE, index=False)
 
-    await message.answer("Спасибо за регистрацию! Ваши данные сохранены.")
+    await message.answer(
+        """
+        Спасибо за регистрацию! Ваши данные сохранены.
+        /menu - открыть меню бота
+        """
+    )
     await state.clear()
