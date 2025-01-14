@@ -3,7 +3,7 @@ from aiogram import Bot, Dispatcher, F
 from aiogram.fsm.storage.memory import MemoryStorage
 from aiogram.filters import CommandStart, Command
 from src.registration import *
-from src.utils import get_token
+from src.utils import get_bot_token
 from src.default_commands import cmd_menu, cmd_start, handle_button_click, set_bot_commands
 from src.survey_for_training import start_survey, set_goal, set_level, set_location, TrainingSurvey
 
@@ -13,7 +13,7 @@ from src.survey_for_training import start_survey, set_goal, set_level, set_locat
     В файле .env:
     BOT_TOKEN = ...
 '''
-TOKEN = get_token()
+TOKEN = get_bot_token()
 
 # Инициализация бота и диспетчера
 bot = Bot(token=TOKEN)

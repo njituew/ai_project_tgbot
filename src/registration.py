@@ -1,4 +1,4 @@
-from src.utils import create_table, calculate_bmi
+from src.utils import create_users_table, calculate_bmi
 import pandas as pd
 from aiogram import types
 from aiogram.fsm.context import FSMContext
@@ -10,7 +10,7 @@ EXCEL_FILE = "data/users.xlsx"
 
 
 # Убедимся, что файл Excel существует или создадим его
-create_table(EXCEL_FILE)
+create_users_table(EXCEL_FILE)
 
 
 def check_registered(user_id: str) -> str | None:

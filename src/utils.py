@@ -6,7 +6,7 @@ import pandas as pd
 '''
 Функция для получения токена бота из .env файла
 '''
-def get_token() -> str:
+def get_bot_token() -> str:
     load_dotenv()
     token = os.getenv("BOT_TOKEN")
 
@@ -19,7 +19,7 @@ def get_token() -> str:
 '''
 Функция для создания (если её нет) книги по пути file_path
 '''
-def create_table(file_path: str) -> None:
+def create_users_table(file_path: str) -> None:
     if not os.path.exists(file_path):
         os.makedirs(os.path.dirname(file_path), exist_ok=True)
         df = pd.DataFrame(columns=["ID", "Name", "Age", "Height", "Weight", "BMI"])
