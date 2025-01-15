@@ -21,13 +21,10 @@ create_table(EXCEL_FILE_TRAINING, colums)   # тренировки
 create_table(EXCEL_FILE_DIET, colums)       # диеты
 
 
-async def check_training(user_id: str) -> bool:
-    def _check_training_sync():
-        df = pd.read_excel(EXCEL_FILE_TRAINING)
-        user = df[df["ID"] == user_id]
-        return not user.empty
-
-    return await asyncio.to_thread(_check_training_sync)
+def check_training(user_id: str) -> bool:
+    df = pd.read_excel(EXCEL_FILE_TRAINING)
+    user = df[df["ID"] == user_id]
+    return not user.empty
 
 
 # Состояния при опросе
@@ -85,8 +82,8 @@ async def start_survey(message: types.Message, state: FSMContext):
 async def new_training(callback_query: types.CallbackQuery, state: FSMContext):
     if callback_query.data == "yes":
         user_id = callback_query.from_user.id
-        await remove_user(EXCEL_FILE_TRAINING, user_id)
-        await remove_user(EXCEL_FILE_DIET, user_id)
+        remove_user(EXCEL_FILE_TRAINING, user_id)
+        remove_user(EXCEL_FILE_DIET, user_id)
         
         await callback_query.message.edit_text(
             "Какова цель тренировок?", reply_markup=create_goal_keyboard()

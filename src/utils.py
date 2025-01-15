@@ -31,22 +31,20 @@ def create_table(file_path: str, colums: list[str]) -> None:
 '''
 Функция для удаления пользователя из таблицы
 '''
-async def remove_user(file_path: str, user_id: str) -> None:
-    async def _remove_user_sync():
-        # Чтение таблицы из Excel
-        df = pd.read_excel(file_path)
+def remove_user(file_path: str, user_id: str) -> None:
+    # Чтение таблицы из Excel
+    df = pd.read_excel(file_path)
 
-        # Приводим колонку 'ID' и значение user_id к единому типу и удаляем лишние пробелы
-        df["ID"] = df["ID"].astype(str).str.strip()
-        user_id_cleaned = str(user_id).strip()
+    # Приводим колонку 'ID' и значение user_id к единому типу и удаляем лишние пробелы
+    df["ID"] = df["ID"].astype(str).str.strip()
+    user_id = str(user_id).strip()
 
-        # Фильтруем таблицу, оставляя только строки, где user_id не равен заданному
-        df_filtered = df[df["ID"] != user_id_cleaned]
+    # Фильтруем таблицу, оставляя только строки, где user_id не равен заданному
+    df_filtered = df[df["ID"] != user_id]
 
-        # Сохраняем обновлённую таблицу
-        df_filtered.to_excel(file_path, index=False)
+    # Сохраняем обновлённую таблицу
+    df_filtered.to_excel(file_path, index=False)
 
-    await asyncio.to_thread(_remove_user_sync)
 
 
 '''
