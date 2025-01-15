@@ -9,6 +9,7 @@ from src.registration import RegistrationStates, process_age, process_height, pr
 from src.survey_for_training import start_survey, new_training, set_goal, set_level, set_location, TrainingSurvey
 from src.my_plan import show_plan
 from src.exercise_library import show_exercise_categories, handle_back_to_categories, handle_category_selection, handle_exercise_selection
+from src.my_profile import show_profile_info
 from src.middleware_registration import RegistrationMiddleware
 from src.utils import get_bot_token
 
@@ -43,12 +44,14 @@ dp.callback_query.register(set_goal, TrainingSurvey.goal)
 dp.callback_query.register(set_level, TrainingSurvey.level)
 dp.callback_query.register(set_location, TrainingSurvey.location)
 
+dp.message.register(show_plan, F.text == "Мой план 📋")
+
 dp.message.register(show_exercise_categories, F.text == "Упражнения 📚")
 dp.callback_query.register(handle_category_selection, F.data.startswith("category_"))
 dp.callback_query.register(handle_exercise_selection, F.data.startswith("exercise_"))
 dp.callback_query.register(handle_back_to_categories, F.data == "back_to_categories")
 
-dp.message.register(show_plan, F.text == "Мой план 📋")
+dp.message.register(show_profile_info, F.text == "Мой профиль 👤")
 
 dp.message.register(handle_button_click)
 

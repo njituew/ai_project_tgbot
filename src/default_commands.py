@@ -27,11 +27,12 @@ async def cmd_menu(message: types.Message):
             [KeyboardButton(text="Создать тренировку 🏋️‍♂️")],
             [KeyboardButton(text="Мой план 📋")],
             [KeyboardButton(text="Упражнения 📚")],
-            [KeyboardButton(text="Моя статистика 📈")]
+            [KeyboardButton(text="Моя статистика 📈")],
+            [KeyboardButton(text="Мой профиль 👤")]
         ],
         resize_keyboard=True
     )
-    await message.answer("Меню открыто.", reply_markup=keyboard)
+    await message.answer("Меню открыто", reply_markup=keyboard)
 
 
 # Ручка для кнопок (пока просто затычка)
