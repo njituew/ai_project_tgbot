@@ -9,6 +9,7 @@ from src.survey_for_training import start_survey, new_training, set_goal, set_le
 from src.exercise_library import show_exercise_categories, handle_back_to_categories, handle_category_selection, handle_exercise_selection
 from src.middleware_registration import RegistrationMiddleware
 
+
 '''
     Загрузка токена бота из файла .env
     В файле .env:

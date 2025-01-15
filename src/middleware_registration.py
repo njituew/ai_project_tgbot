@@ -8,15 +8,13 @@ import pandas as pd
 async def check_registered_boolean(user_id: str) -> bool:
     df = pd.read_excel(EXCEL_FILE)
     user = df[df["ID"] == user_id]
-    if not user.empty:
-        return True
-    return False
+    return not user.empty
 
 
 class RegistrationMiddleware(BaseMiddleware):
     """
-    Middleware для проверки, зарегистрирован ли пользователь, 
-    с учётом состояния FSM.
+    Middleware для проверки, зарегистрирован ли пользователь,
+    с корректной обработкой команд и текстовых сообщений в процессе регистрации.
     """
     async def __call__(self, handler, event, data: dict):
         user_id = event.from_user.id if isinstance(event, (Message, CallbackQuery)) else None
@@ -28,20 +26,24 @@ class RegistrationMiddleware(BaseMiddleware):
         if isinstance(event, Message) and event.text == "/start":
             return await handler(event, data)
 
-        # Получаем состояние FSM
+        # Проверяем состояние FSM
         fsm_context: FSMContext = data.get("state")
         if fsm_context:
             state = await fsm_context.get_state()
-            # Пропускаем сообщения, если пользователь находится в процессе регистрации
+            # Если пользователь в процессе регистрации, различаем команды и текст
             if state in [
                 RegistrationStates.waiting_for_name,
                 RegistrationStates.waiting_for_age,
                 RegistrationStates.waiting_for_height,
                 RegistrationStates.waiting_for_weight,
             ]:
-                return await handler(event, data)
+                # Проверяем, является ли сообщение командой (начинается с '/')
+                if isinstance(event, Message) and event.text.startswith("/"):
+                    await event.answer("Вы не завершили регистрацию. Пожалуйста, завершите её, чтобы продолжить.")
+                    return  # Прерываем обработку команды
+                return await handler(event, data)  # Пропускаем текстовые сообщения
 
-        # Проверяем регистрацию
+        # Проверяем регистрацию пользователя
         if not await check_registered_boolean(user_id):
             if isinstance(event, Message):
                 await event.answer("Вы не зарегистрированы. Пожалуйста, зарегистрируйтесь, чтобы пользоваться всеми функциями бота.")
