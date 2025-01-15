@@ -12,6 +12,7 @@ from src.exercise_library import show_exercise_categories, handle_back_to_catego
 from src.my_profile import show_profile_info
 from src.middleware_registration import RegistrationMiddleware
 from src.utils import get_bot_token
+from src.reminders import show_reminders_menu, schedule_notifications, disabling_notifications, on_startup
 
 
 '''
@@ -51,6 +52,10 @@ dp.callback_query.register(handle_category_selection, F.data.startswith("categor
 dp.callback_query.register(handle_exercise_selection, F.data.startswith("exercise_"))
 dp.callback_query.register(handle_back_to_categories, F.data == "back_to_categories")
 
+dp.message.register(show_reminders_menu, F.text == "Напоминания ⏰")
+dp.callback_query.register(schedule_notifications, F.data == "turn_on_reminder")
+dp.callback_query.register(disabling_notifications, F.data == "turn_off_reminder")
+
 dp.message.register(show_profile_info, F.text == "Мой профиль 👤")
 
 dp.message.register(handle_button_click)
@@ -59,6 +64,7 @@ dp.message.register(handle_button_click)
 # Запуск бота
 async def main():
     await set_bot_commands(bot)
+    await on_startup()
     await dp.start_polling(bot)
 
 
