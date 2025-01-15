@@ -2,7 +2,6 @@ import os
 from dotenv import load_dotenv
 import pandas as pd
 import json
-from aiogram.utils.markdown import bold, italic, text
 
 
 '''
