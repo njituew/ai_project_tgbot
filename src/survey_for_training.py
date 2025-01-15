@@ -1,4 +1,4 @@
-from src.utils import create_trainings_table, create_diets_table, remove_user
+from src.utils import create_table, remove_user
 import pandas as pd
 
 from aiogram.fsm.state import State, StatesGroup
@@ -9,18 +9,19 @@ from aiogram import types
 from src.ai_generation import generate_schedule
 
 
-# Путь к файлу Excel
+# Пути к таблицам
 EXCEL_FILE_TRAINING = "data/trainings.xlsx"
 EXCEL_FILE_DIET = "data/diets.xlsx"
 
 
-# Убедимся, что файл Excel существует или создадим его
-create_trainings_table(EXCEL_FILE_TRAINING)
-create_diets_table(EXCEL_FILE_DIET)
+# Созданиец таблиц
+colums = ["ID", "monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"]
+create_table(EXCEL_FILE_TRAINING, colums)   # тренировки
+create_table(EXCEL_FILE_DIET, colums)       # диеты
 
 
 def check_training(user_id: str) -> bool:
-    df = pd.read_excel(EXCEL_FILE_TRAINING)  #, engine="openpyxl"
+    df = pd.read_excel(EXCEL_FILE_TRAINING)
     user = df[df["ID"] == user_id]
     if not user.empty:
         return True

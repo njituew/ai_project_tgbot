@@ -18,33 +18,31 @@ def get_bot_token() -> str:
 
 
 '''
-Функция для создания (если её нет) базы пользователей
+Функция для создания (если её нет) таблицы
 '''
-def create_users_table(file_path: str) -> None:
+def create_table(file_path: str, colums: list[str]) -> None:
     if not os.path.exists(file_path):
         os.makedirs(os.path.dirname(file_path), exist_ok=True)
-        df = pd.DataFrame(columns=["ID", "Name", "Age", "Height", "Weight", "BMI"])
+        df = pd.DataFrame(columns=colums)
         df.to_excel(file_path, index=False)
 
 
 '''
-Функция для создания (если её нет) базы тренировок
+Функция для удаления пользователя из таблицы
 '''
-def create_trainings_table(file_path: str) -> None:
-    if not os.path.exists(file_path):
-        os.makedirs(os.path.dirname(file_path), exist_ok=True)
-        df = pd.DataFrame(columns=["ID", "monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"])
-        df.to_excel(file_path, index=False)
+def remove_user(file_path: str, user_id: str) -> None:
+    # Чтение таблицы из Excel
+    df = pd.read_excel(file_path)
 
+    # Приводим колонку 'ID' и значение user_id к единому типу и удаляем лишние пробелы
+    df["ID"] = df["ID"].astype(str).str.strip()
+    user_id = str(user_id).strip()
 
-'''
-Функция для создания (если её нет) базы диет
-'''
-def create_diets_table(file_path: str) -> None:
-    if not os.path.exists(file_path):
-        os.makedirs(os.path.dirname(file_path), exist_ok=True)
-        df = pd.DataFrame(columns=["ID", "monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"])
-        df.to_excel(file_path, index=False)
+    # Фильтруем таблицу, оставляя только строки, где user_id не равен заданному
+    df_filtered = df[df["ID"] != user_id]
+
+    # Сохраняем обновлённую таблицу
+    df_filtered.to_excel(file_path, index=False)
 
 
 '''
@@ -69,21 +67,3 @@ def str_to_json(raw_string: str):
     parsed_json = json.loads(cleaned_string)
     
     return parsed_json
-
-
-'''
-Функция для удаления пользователя из таблицы
-'''
-def remove_user(file_path: str, user_id: str) -> None:
-    # Чтение таблицы из Excel
-    df = pd.read_excel(file_path)
-
-    # Приводим колонку 'ID' и значение user_id к единому типу и удаляем лишние пробелы
-    df["ID"] = df["ID"].astype(str).str.strip()
-    user_id = str(user_id).strip()
-
-    # Фильтруем таблицу, оставляя только строки, где user_id не равен заданному
-    df_filtered = df[df["ID"] != user_id]
-
-    # Сохраняем обновлённую таблицу
-    df_filtered.to_excel(file_path, index=False)
