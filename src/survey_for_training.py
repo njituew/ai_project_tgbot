@@ -1,12 +1,13 @@
-from src.utils import create_table, remove_user
+import asyncio
 import pandas as pd
+
+from src.utils import create_table, remove_user
+from src.ai_generation import generate_schedule
 
 from aiogram.fsm.state import State, StatesGroup
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 from aiogram.fsm.context import FSMContext
 from aiogram import types
-
-from src.ai_generation import generate_schedule
 
 
 # Пути к таблицам
@@ -20,12 +21,13 @@ create_table(EXCEL_FILE_TRAINING, colums)   # тренировки
 create_table(EXCEL_FILE_DIET, colums)       # диеты
 
 
-def check_training(user_id: str) -> bool:
-    df = pd.read_excel(EXCEL_FILE_TRAINING)
-    user = df[df["ID"] == user_id]
-    if not user.empty:
-        return True
-    return False
+async def check_training(user_id: str) -> bool:
+    def _check_training_sync():
+        df = pd.read_excel(EXCEL_FILE_TRAINING)
+        user = df[df["ID"] == user_id]
+        return not user.empty
+
+    return await asyncio.to_thread(_check_training_sync)
 
 
 # Состояния при опросе
@@ -68,7 +70,8 @@ def create_location_keyboard():
 
 async def start_survey(message: types.Message, state: FSMContext):
     user_id = message.from_user.id
-    if check_training(user_id):
+    is_training = await check_training(user_id)
+    if is_training:
         await message.answer(
             "У вас уже есть тренировка. Создать новую?",
             reply_markup=create_new_training_keyboard()
@@ -82,8 +85,8 @@ async def start_survey(message: types.Message, state: FSMContext):
 async def new_training(callback_query: types.CallbackQuery, state: FSMContext):
     if callback_query.data == "yes":
         user_id = callback_query.from_user.id
-        remove_user(EXCEL_FILE_TRAINING, user_id)
-        remove_user(EXCEL_FILE_DIET, user_id)
+        await remove_user(EXCEL_FILE_TRAINING, user_id)
+        await remove_user(EXCEL_FILE_DIET, user_id)
         
         await callback_query.message.edit_text(
             "Какова цель тренировок?", reply_markup=create_goal_keyboard()
