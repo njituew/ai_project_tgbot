@@ -25,13 +25,13 @@ dp = Dispatcher(storage=MemoryStorage())
 dp.message.middleware(RegistrationMiddleware())
 dp.callback_query.middleware(RegistrationMiddleware())
 
-dp.message.register(cmd_start, CommandStart())  # команда /start
-dp.message.register(cmd_menu, Command("menu"))  # команда /menu
-
 dp.message.register(process_name, RegistrationStates.waiting_for_name)
 dp.message.register(process_age, RegistrationStates.waiting_for_age)
 dp.message.register(process_height, RegistrationStates.waiting_for_height)
 dp.message.register(process_weight, RegistrationStates.waiting_for_weight)
+
+dp.message.register(cmd_start, CommandStart())  # команда /start
+dp.message.register(cmd_menu, Command("menu"))  # команда /menu
 
 dp.message.register(start_survey, F.text == "Создать тренировку 🏋️‍♂️")
 dp.callback_query.register(new_training, TrainingSurvey.new_training)

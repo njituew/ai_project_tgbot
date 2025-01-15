@@ -165,7 +165,7 @@ async def set_location(callback_query: types.CallbackQuery, state: FSMContext):
     df = pd.concat([df, diet_data], ignore_index=True)
     df.to_excel(EXCEL_FILE_DIET, index=False)
     
-    await callback_query.message.answer("Ваша тренировка создана успешно! 👍")
+    await callback_query.message.edit_text("Ваша тренировка создана успешно! 👍")
     
     await state.clear()  # Завершаем FSM
     
