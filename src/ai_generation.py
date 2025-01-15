@@ -34,7 +34,7 @@ def generate_schedule(data: dict) -> None:
     Если в конкретный день тренировки нет, то для него "workout" оставляешь пустым.
     Составь для пользователя индивидуальный план, учитывая его результаты опроса: {data}.
     Я буду форматировать твой ответ в json и после парсить его, поэтому важно,
-    что в ответе должен быть только json. Никакого лишнего текста.
+    чтобы в ответе был только json. Никакого лишнего текста.
     """
 
     formatted_prompt = template.format(data=data)
@@ -61,3 +61,9 @@ def generate_schedule(data: dict) -> None:
         result_json = generate_schedule(data)
     
     return result_json
+
+
+def simple_message_to_ai() -> str:
+
+    chat = GigaChat(verify_ssl_certs=False, scope="GIGACHAT_API_PERS")
+
