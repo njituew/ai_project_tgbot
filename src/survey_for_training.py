@@ -67,8 +67,7 @@ def create_location_keyboard():
 
 async def start_survey(message: types.Message, state: FSMContext):
     user_id = message.from_user.id
-    is_training = await check_training(user_id)
-    if is_training:
+    if check_training(user_id):
         await message.answer(
             "У вас уже есть тренировка. Создать новую?",
             reply_markup=create_new_training_keyboard()
