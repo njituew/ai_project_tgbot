@@ -61,9 +61,3 @@ def generate_schedule(data: dict) -> None:
         result_json = generate_schedule(data)
     
     return result_json
-
-
-def simple_message_to_ai() -> str:
-
-    chat = GigaChat(verify_ssl_certs=False, scope="GIGACHAT_API_PERS")
-
