@@ -61,7 +61,7 @@ def generate_schedule(data: dict, info: dict) -> None:
         result_json = str_to_json(response.content)
     except:
         print("except")
-        result_json = generate_schedule(data)
+        result_json = generate_schedule(data, info)
     
     return result_json
 
