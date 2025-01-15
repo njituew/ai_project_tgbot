@@ -133,7 +133,14 @@ async def set_location(callback_query: types.CallbackQuery, state: FSMContext):
     await callback_query.message.edit_text("Создание персонального плана тренировок... ⚙️")
 
     user_data = await state.get_data()
-    training_json = generate_schedule(user_data)
+    
+    # Получение информации о пользователе
+    user_id = callback_query.from_user.id
+    df = pd.read_excel("data/users.xlsx")
+    user_info = df[df["ID"] == user_id][["Age", "Height", "Weight", "BMI"]].iloc[0].to_dict()
+    
+    # Генерация плана тренировок
+    training_json = generate_schedule(user_data, user_info)
     
     # Создание таблицы с тренировками
     df = pd.read_excel(EXCEL_FILE_TRAINING)
