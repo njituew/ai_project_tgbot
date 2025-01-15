@@ -11,7 +11,7 @@ async def cmd_start(message: types.Message, state: FSMContext):
     user_id = message.from_user.id
     user_name = check_registered(user_id)
     if user_name:
-        await message.answer(f"С возвращением, {user_name}!")
+        await message.answer(f"С возвращением, {user_name}!\n/menu - открыть меню бота")
     else:
         await message.answer("Добро пожаловать! Давайте начнем регистрацию. Как вас зовут?")
         await state.set_state(RegistrationStates.waiting_for_name)
