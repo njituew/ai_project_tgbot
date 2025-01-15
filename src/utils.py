@@ -2,6 +2,7 @@ import os
 from dotenv import load_dotenv
 import pandas as pd
 import json
+from aiogram.utils.markdown import bold, italic, text
 
 
 '''
@@ -67,3 +68,29 @@ def str_to_json(raw_string: str):
     parsed_json = json.loads(cleaned_string)
     
     return parsed_json
+
+
+'''
+Функция для форматирования информации об упражнении
+'''
+def format_exercise_info(key, exercise_data):
+    data = exercise_data.get(key)
+    if not data:
+        return "Информация об упражнении не найдена."
+
+    # Разделяем описание, ошибки и ссылку
+    
+    description_errors, link = data.split(" Ссылка на видео: ")
+    description, errors = description_errors.split(" Ключевые ошибки: ")
+    errors_list = errors.split("; ")
+    link_text = f"\nВидео с техникой упражнения: {link.strip()}"
+
+    # Формируем текст
+    formatted_text = "\n".join([
+        description.strip(),
+        "\nКлючевые ошибки:",
+        *[f"- {error.strip()}" for error in errors_list],
+        link_text
+    ]).strip()
+
+    return formatted_text

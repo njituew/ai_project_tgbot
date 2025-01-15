@@ -1,6 +1,7 @@
 from aiogram import types
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 import json
+from src.utils import format_exercise_info
 
 JSON_FILE_PATH = "src/exercise_library_dict.json"
 
@@ -56,11 +57,11 @@ async def handle_category_selection(callback_query: types.CallbackQuery):
 async def handle_exercise_selection(callback_query: types.CallbackQuery):
     for category, exercises in exercise_categories.items():
         if callback_query.data in exercises:
-            exercise_info = exercises[callback_query.data]
+            exercise_info = format_exercise_info(callback_query.data, exercises)
             # Редактируем сообщение и сохраняем текущую клавиатуру
             await callback_query.message.edit_text(
-                text=f"Описание упражнения:\n{exercise_info}\n\nВыберите другое упражнение, если хотите:",
-                reply_markup=callback_query.message.reply_markup  # Сохраняем текущую клавиатуру
+                text=f"{exercise_info}\n\nВыберите другое упражнение, если хотите:",
+                reply_markup=callback_query.message.reply_markup,  # Сохраняем текущую клавиатуру
             )
             await callback_query.answer()  # Убираем "часы"
             return
