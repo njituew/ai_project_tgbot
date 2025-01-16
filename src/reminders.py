@@ -20,10 +20,6 @@ def plan_for_today(user_id: int):
     trainings_info = trainings_df[trainings_df["ID"] == user_id]
     diets_info = diets_df[diets_df["ID"] == user_id]
 
-    if diets_info.empty:
-        return ("На данный момент у вас нет плана тренировок.\n\n"
-                "Создайте свой персональный план и добивайтесь успехов вместе с нашим ботом! 🏆")
-
     # План на сегодня
     trainings_text = trainings_info.iloc[0].get(datetime.datetime.today().strftime("%A").lower())
     diets_text = diets_info.iloc[0].get(datetime.datetime.today().strftime("%A").lower())
@@ -53,8 +49,17 @@ def create_reminders_keyboard():
 
 # Отображение клавиатуры
 async def show_reminders_menu(message: types.Message):
-    keyboard = create_reminders_keyboard()
-    await message.answer("Выберите действие для напоминаний:", reply_markup=keyboard)
+    user_id = message.from_user.id
+    
+    diets_df = pd.read_excel(EXCEL_FILE_DIET)
+
+    if  not diets_df[diets_df["ID"] == user_id].empty:
+        await message.answer("Нельзя включить напоминания, так как "
+                "на данный момент у вас нет плана тренировок.\n\n"
+                "Создайте свой персональный план и добивайтесь успехов вместе с нашим ботом! 🏆")
+    else:
+        keyboard = create_reminders_keyboard()
+        await message.answer("Выберите действие для напоминаний:", reply_markup=keyboard)
 
 
 # Функция для отправки сообщения пользователю
@@ -72,14 +77,14 @@ async def schedule_notifications(callback_query: types.CallbackQuery, bot: Bot):
         # Создание задачи на основе времени
         scheduler.add_job(
             send_notification,
-            CronTrigger(hour=hour, minute=00),
+            CronTrigger(hour=hour, minute=0),
             args=[bot, user_id],  # Передаем bot и user_id в задачу
             id=f"notification_{user_id}_{hour}",  # Уникальный ID задачи
             replace_existing=True  # Заменить задачу, если ID совпадает
         )
     
     # Подтверждение обратного вызова
-    await callback_query.message.edit_text("Напоминания включены!\nТеперь они будут приходить вам каждый день в 08:00 и 18:00.")
+    await callback_query.message.edit_text("Напоминания включены ✅\nТеперь они будут приходить вам каждый день в 08:00 и 18:00.")
 
 
 # Функция для отключения напоминаний
@@ -94,7 +99,7 @@ async def disabling_notifications(callback_query: types.CallbackQuery, bot: Bot)
             pass
 
     # Подтверждение обратного вызова
-    await callback_query.message.edit_text("Напоминания отключены!")
+    await callback_query.message.edit_text("Напоминания отключены ❌")
 
 async def on_startup():
     scheduler.start()

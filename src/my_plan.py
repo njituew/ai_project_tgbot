@@ -8,10 +8,6 @@ from src.survey_for_training import check_training, EXCEL_FILE_TRAINING, EXCEL_F
 from src.utils import remove_user
 
 
-class MyPlanStates(StatesGroup):
-    plan_operation = State()  # Состояние для редактирования тренировок
-
-
 def create_my_training_keyboard():
     return InlineKeyboardMarkup(inline_keyboard=[
         [InlineKeyboardButton(text="Создать новую тренировку 🆕", callback_data="new_plan")],
@@ -67,7 +63,6 @@ async def show_plan(message: types.Message, state: FSMContext):
         await message.answer(
             f"Ваш индивидуальный план:\n\n{plan}",
             reply_markup=create_my_training_keyboard())
-        await state.set_state(MyPlanStates.plan_operation)
         
     else:
         await message.answer(
