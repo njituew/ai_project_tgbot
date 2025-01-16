@@ -10,6 +10,8 @@ from src.survey_for_training import EXCEL_FILE_TRAINING, EXCEL_FILE_DIET
 
 
 scheduler = AsyncIOScheduler()
+hours = (8, 18)
+
 
 def plan_for_today(user_id: int):
     # Чтение файла
@@ -47,13 +49,11 @@ def create_reminders_keyboard():
     return InlineKeyboardMarkup(inline_keyboard=buttons)
 
 
-# Отображение клавиатуры
 async def show_reminders_menu(message: types.Message):
     user_id = message.from_user.id
-    
     diets_df = pd.read_excel(EXCEL_FILE_DIET)
 
-    if  not diets_df[diets_df["ID"] == user_id].empty:
+    if diets_df[diets_df["ID"] == user_id].empty:
         await message.answer("Нельзя включить напоминания, так как "
                 "на данный момент у вас нет плана тренировок.\n\n"
                 "Создайте свой персональный план и добивайтесь успехов вместе с нашим ботом! 🏆")
@@ -67,10 +67,7 @@ async def send_notification(bot: Bot, user_id: int):
     await bot.send_message(chat_id=user_id, text=plan_for_today(user_id))
 
 
-hours = (8, 18)
-
-# Функция для планирования уведомлений
-async def schedule_notifications(callback_query: types.CallbackQuery, bot: Bot):
+async def enable_notifications(callback_query: types.CallbackQuery, bot: Bot):
     user_id = callback_query.from_user.id
 
     for hour in hours:
@@ -78,17 +75,15 @@ async def schedule_notifications(callback_query: types.CallbackQuery, bot: Bot):
         scheduler.add_job(
             send_notification,
             CronTrigger(hour=hour, minute=0),
-            args=[bot, user_id],  # Передаем bot и user_id в задачу
+            args=[bot, user_id],
             id=f"notification_{user_id}_{hour}",  # Уникальный ID задачи
-            replace_existing=True  # Заменить задачу, если ID совпадает
+            replace_existing=True                 # Заменить задачу, если ID совпадает
         )
     
-    # Подтверждение обратного вызова
     await callback_query.message.edit_text("Напоминания включены ✅\nТеперь они будут приходить вам каждый день в 08:00 и 18:00.")
 
 
-# Функция для отключения напоминаний
-async def disabling_notifications(callback_query: types.CallbackQuery, bot: Bot):
+async def disable_notifications(callback_query: types.CallbackQuery, bot: Bot):
     user_id = callback_query.from_user.id
 
     for hour in hours:
@@ -98,7 +93,6 @@ async def disabling_notifications(callback_query: types.CallbackQuery, bot: Bot)
         except JobLookupError:
             pass
 
-    # Подтверждение обратного вызова
     await callback_query.message.edit_text("Напоминания отключены ❌")
 
 async def on_startup():

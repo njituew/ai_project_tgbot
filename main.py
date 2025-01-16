@@ -12,8 +12,9 @@ from src.exercise_library import show_exercise_categories, handle_back_to_catego
 from src.my_profile import show_profile_info
 from src.middleware_registration import RegistrationMiddleware
 from src.utils import get_bot_token
-from src.reminders import show_reminders_menu, schedule_notifications, disabling_notifications, on_startup
+from src.reminders import show_reminders_menu, enable_notifications, disable_notifications, on_startup
 from src.logging_middleware import LoggingMiddleware
+
 
 '''
     Загрузка токена бота из файла .env
@@ -57,8 +58,8 @@ dp.callback_query.register(handle_exercise_selection, F.data.startswith("exercis
 dp.callback_query.register(handle_back_to_categories, F.data == "back_to_categories")
 
 dp.message.register(show_reminders_menu, F.text == "Напоминания ⏰")
-dp.callback_query.register(schedule_notifications, F.data == "turn_on_reminder")
-dp.callback_query.register(disabling_notifications, F.data == "turn_off_reminder")
+dp.callback_query.register(enable_notifications, F.data == "turn_on_reminder")
+dp.callback_query.register(disable_notifications, F.data == "turn_off_reminder")
 
 dp.message.register(show_profile_info, F.text == "Мой профиль 👤")
 
