@@ -1,7 +1,6 @@
 from aiogram import types
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 from aiogram.fsm.context import FSMContext
-from aiogram.fsm.state import State, StatesGroup
 
 import pandas as pd
 from src.survey_for_training import check_training, EXCEL_FILE_TRAINING, EXCEL_FILE_DIET, create_new_training_keyboard, create_goal_keyboard, TrainingSurvey

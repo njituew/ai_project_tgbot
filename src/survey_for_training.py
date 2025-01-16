@@ -1,4 +1,3 @@
-import asyncio
 import pandas as pd
 
 from src.utils import create_table, remove_user
