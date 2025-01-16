@@ -78,7 +78,7 @@ def generate_schedule(data: dict, info: dict) -> None:
     try:
         result_json = str_to_json(response.content)
     except:
-        print("except")
+        print(f"AI generation error.\nInput:\n{data=}\n{info=}\n\nOutput:\n{response.content}")
         result_json = generate_schedule(data, info)
 
     return result_json

@@ -37,6 +37,8 @@ class LoggingMiddleware(BaseMiddleware):
         # Логируем в Excel
         if log_data["ID Пользователя"]:
             self.log_to_excel(log_data)
+        
+        print(log_data)
 
         # Передаём обработку дальше
         response = await handler(event, data)
