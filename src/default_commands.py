@@ -46,7 +46,7 @@ async def handle_button_click(message: types.Message):
 
     user_id = message.from_user.id
     user_info = get_info(user_id)
-    user_training = get_plan(user_id) if check_training(user_id) else "У пользователя ещё нет плана тренировок и диеты"
+    user_training = get_plan(user_id) if check_training(user_id) else {}
     await message.answer(simple_message_to_ai(text, user_info, user_training))
 
 async def set_bot_commands(bot: Bot):

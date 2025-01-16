@@ -49,10 +49,18 @@ SIMPLE_MESSAGE_TEMPLATE = """Информация о пользователе:
 {info}
 План тренировок и диета пользователя:
 {training}
+
+Ответь на сообщение пользователя:
+{message}"""
+
+SIMPLE_MESSAGE_TEMPLATE_WITHOUT_TRAINING = """Информация о пользователе:
+{info}
+
 Ответь на сообщение пользователя:
 {message}
-Если у пользователя ещё нет тренировок и диеты, предложи помочь их создать по команде /menu,
-но не предлагай конкретные упражнения или питание."""
+И предложи помочь создать план тренировок и диеты по команде /menu (обязательно укажи эту команду),
+но не предлагай конкретные упражнения или питание, если только
+пользователь сам этого не попросит."""
 
 
 def generate_schedule(data: dict, info: dict) -> None:
@@ -77,7 +85,10 @@ def generate_schedule(data: dict, info: dict) -> None:
 
 
 def simple_message_to_ai(message: str, info: dict, training: dict) -> str:
-    formatted_prompt = SIMPLE_MESSAGE_TEMPLATE.format(info=info, training=training, message=message)
+    if len(training) == 0:
+        formatted_prompt = SIMPLE_MESSAGE_TEMPLATE_WITHOUT_TRAINING.format(info=info, message=message)
+    else:
+        formatted_prompt = SIMPLE_MESSAGE_TEMPLATE.format(info=info, training=training, message=message)
 
     # Подготовка сообщений
     messages = [
