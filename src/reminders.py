@@ -62,7 +62,7 @@ async def send_notification(bot: Bot, user_id: int):
     await bot.send_message(chat_id=user_id, text=plan_for_today(user_id))
 
 
-hours = (8, 19)
+hours = (8, 18)
 
 # Функция для планирования уведомлений
 async def schedule_notifications(callback_query: types.CallbackQuery, bot: Bot):
@@ -72,7 +72,7 @@ async def schedule_notifications(callback_query: types.CallbackQuery, bot: Bot):
         # Создание задачи на основе времени
         scheduler.add_job(
             send_notification,
-            CronTrigger(hour=hour, minute=29),
+            CronTrigger(hour=hour, minute=00),
             args=[bot, user_id],  # Передаем bot и user_id в задачу
             id=f"notification_{user_id}_{hour}",  # Уникальный ID задачи
             replace_existing=True  # Заменить задачу, если ID совпадает
