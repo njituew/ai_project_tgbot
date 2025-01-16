@@ -13,7 +13,7 @@ from src.my_profile import show_profile_info
 from src.middleware_registration import RegistrationMiddleware
 from src.utils import get_bot_token
 from src.reminders import show_reminders_menu, schedule_notifications, disabling_notifications, on_startup
-
+from src.logging_middleware import LoggingMiddleware
 
 '''
     Загрузка токена бота из файла .env
@@ -30,6 +30,8 @@ dp = Dispatcher(storage=MemoryStorage())
 # Регистрация ручек
 dp.message.middleware(RegistrationMiddleware())
 dp.callback_query.middleware(RegistrationMiddleware())
+dp.message.middleware(LoggingMiddleware())
+dp.callback_query.middleware(LoggingMiddleware())
 
 dp.message.register(cmd_start, CommandStart())  # команда /start
 dp.message.register(process_name, RegistrationStates.waiting_for_name)
