@@ -24,12 +24,9 @@ async def cmd_start(message: types.Message, state: FSMContext):
 async def cmd_menu(message: types.Message):
     keyboard = ReplyKeyboardMarkup(
         keyboard=[
-            [KeyboardButton(text="Создать тренировку 🏋️‍♂️")],
-            [KeyboardButton(text="Мой план 📋")],
-            [KeyboardButton(text="Упражнения 📚")],
-            [KeyboardButton(text="Моя статистика 📈")],
-            [KeyboardButton(text="Напоминания ⏰")],
-            [KeyboardButton(text="Мой профиль 👤")]
+            [KeyboardButton(text="Создать тренировку 🏋️‍♂️"), KeyboardButton(text="Мой план 📋")],
+            [KeyboardButton(text="Упражнения 📚"), KeyboardButton(text="Напоминания ⏰")],
+            [KeyboardButton(text="Мой профиль 👤"), KeyboardButton(text="Моя статистика 📈")]
         ],
         resize_keyboard=True
     )
