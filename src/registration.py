@@ -39,6 +39,9 @@ async def process_age(message: types.Message, state: FSMContext):
     if not message.text.isdigit():
         await message.answer("Пожалуйста, укажите возраст числом.")
         return
+    elif int(message.text) < 1 or int(message.text) > 150:
+        await message.answer("Пожалуйста, укажите свой настоящий возраст.")
+        return
 
     await state.update_data(age=int(message.text))
     await message.answer("Отлично! Укажите ваш рост в сантиметрах.")
@@ -49,7 +52,10 @@ async def process_height(message: types.Message, state: FSMContext):
     if not message.text.isdigit():
         await message.answer("Пожалуйста, укажите рост числом.")
         return
-
+    elif int(message.text) < 100 or int(message.text) > 300:
+        await message.answer("Пожалуйста, укажите свой настоящий рост.")
+        return
+    
     await state.update_data(height=int(message.text))
     await message.answer("Хорошо! Теперь введите ваш вес в килограммах.")
     await state.set_state(RegistrationStates.waiting_for_weight)
@@ -58,6 +64,9 @@ async def process_height(message: types.Message, state: FSMContext):
 async def process_weight(message: types.Message, state: FSMContext):
     if not message.text.isdigit():
         await message.answer("Пожалуйста, укажите вес числом.")
+        return
+    elif int(message.text) < 1 or int(message.text) > 600:
+        await message.answer("Пожалуйста, укажите свой настоящий вес.")
         return
 
     await state.update_data(weight=int(message.text))
