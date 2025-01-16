@@ -51,7 +51,6 @@ dp.message.register(show_plan, F.text == "Мой план 📋")
 dp.callback_query.register(plan_operation, F.data == "new_plan")
 dp.callback_query.register(plan_operation, F.data == "remove_plan")
 
-
 dp.message.register(show_exercise_categories, F.text == "Упражнения 📚")
 dp.callback_query.register(handle_category_selection, F.data.startswith("category_"))
 dp.callback_query.register(handle_exercise_selection, F.data.startswith("exercise_"))
