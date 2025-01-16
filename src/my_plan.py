@@ -79,7 +79,7 @@ async def plan_operation(callback_query: types.CallbackQuery, state: FSMContext)
         remove_user(EXCEL_FILE_DIET, user_id)
         await callback_query.message.edit_text("Ваш предыдущий индивидуалный план удалён.")
         
-        await callback_query.message.edit_text(
+        await callback_query.message.answer(
             "Какова цель тренировок?", reply_markup=create_goal_keyboard()
         )
         await state.set_state(TrainingSurvey.goal)
