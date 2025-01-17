@@ -78,7 +78,7 @@ async def start_survey(message: types.Message, state: FSMContext):
 
 
 async def new_training(callback_query: types.CallbackQuery, state: FSMContext):
-    if callback_query.data == "yes":
+    if callback_query.data == "yes" or callback_query.data == "new_training":
         user_id = callback_query.from_user.id
         remove_user(EXCEL_FILE_TRAINING, user_id)
         remove_user(EXCEL_FILE_DIET, user_id)

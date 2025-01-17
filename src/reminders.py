@@ -10,7 +10,7 @@ from src.survey_for_training import EXCEL_FILE_TRAINING, EXCEL_FILE_DIET
 
 
 scheduler = AsyncIOScheduler()
-hours = (8, 18)
+hours = (8, 18, 11)
 
 
 def plan_for_today(user_id: int):
@@ -54,9 +54,13 @@ async def show_reminders_menu(message: types.Message):
     diets_df = pd.read_excel(EXCEL_FILE_DIET)
 
     if diets_df[diets_df["ID"] == user_id].empty:
-        await message.answer("Нельзя включить напоминания, так как "
-                "на данный момент у вас нет плана тренировок.\n\n"
-                "Создайте свой персональный план и добивайтесь успехов вместе с нашим ботом! 🏆")
+        await message.answer(
+            "Нельзя включить напоминания, так как на данный момент у вас нет плана тренировок.\n\n"
+            "Создайте свой персональный план и добивайтесь успехов вместе с нашим ботом! 🏆",
+            reply_markup=InlineKeyboardMarkup(inline_keyboard=[
+                [InlineKeyboardButton(text="Создать тренировку 🏋️‍♂️", callback_data="new_training")]
+            ])
+        )
     else:
         keyboard = create_reminders_keyboard()
         await message.answer("Выберите действие для напоминаний:", reply_markup=keyboard)
@@ -74,7 +78,7 @@ async def enable_notifications(callback_query: types.CallbackQuery, bot: Bot):
         # Создание задачи на основе времени
         scheduler.add_job(
             send_notification,
-            CronTrigger(hour=hour, minute=0),
+            CronTrigger(hour=hour, minute=45),
             args=[bot, user_id],
             id=f"notification_{user_id}_{hour}",  # Уникальный ID задачи
             replace_existing=True                 # Заменить задачу, если ID совпадает

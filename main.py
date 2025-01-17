@@ -58,6 +58,7 @@ dp.callback_query.register(handle_exercise_selection, F.data.startswith("exercis
 dp.callback_query.register(handle_back_to_categories, F.data == "back_to_categories")
 
 dp.message.register(show_reminders_menu, F.text == "Напоминания ⏰")
+dp.callback_query.register(new_training, F.data == "new_training")
 dp.callback_query.register(enable_notifications, F.data == "turn_on_reminder")
 dp.callback_query.register(disable_notifications, F.data == "turn_off_reminder")
 
