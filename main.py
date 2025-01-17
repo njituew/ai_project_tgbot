@@ -48,6 +48,7 @@ dp.callback_query.register(new_training, F.data.startswith("survey_training_new"
 dp.callback_query.register(set_goal, F.data.startswith("goal_"))
 dp.callback_query.register(set_level, F.data.startswith("level_"))
 dp.callback_query.register(set_location, F.data.startswith("location_"))
+dp.callback_query.register(set_wishes, TrainingStates.waiting_for_wishes)
 
 dp.message.register(show_plan, F.text == "Мой план 📋")
 dp.callback_query.register(new_training, F.data == "my_plan_new")

@@ -5,7 +5,7 @@ from aiogram.types import ReplyKeyboardMarkup, KeyboardButton, BotCommand
 from src.registration import check_registered, RegistrationStates
 from src.ai_generation import simple_message_to_ai
 from src.my_profile import get_info
-from src.survey_for_training import check_training
+from src.survey_for_training import check_training, TrainingStates, set_wishes
 from src.my_plan import get_plan
 
 
@@ -38,7 +38,13 @@ async def cmd_menu(message: types.Message):
 
 
 # Ручка для кнопок
-async def handle_button_click(message: types.Message):
+async def handle_button_click(message: types.Message, state: FSMContext):
+    current_state = await state.get_state()
+    # Если пользователь находится в состоянии ожидания пожеланий, не обрабатываем это сообщение
+    if current_state == TrainingStates.waiting_for_wishes:
+        await set_wishes(message, state)
+        return
+    
     text = message.text
     if text in ("Моя статистика 📈"):
         await message.answer(text)
