@@ -1,6 +1,7 @@
 import pandas as pd
 
 from src.utils import create_table, remove_user
+from src.reminders import remove_notifications
 from src.ai_generation import generate_schedule
 
 from aiogram.fsm.state import State, StatesGroup
@@ -195,4 +196,5 @@ async def remove_training(callback_query: types.CallbackQuery):
     user_id = callback_query.from_user.id
     remove_user(EXCEL_FILE_TRAINING, user_id)
     remove_user(EXCEL_FILE_DIET, user_id)
+    remove_notifications(user_id)
     await callback_query.message.edit_text("Ваш индивидуалный план удалён.")

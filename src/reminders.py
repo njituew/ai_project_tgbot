@@ -6,8 +6,11 @@ from apscheduler.triggers.cron import CronTrigger
 from apscheduler.jobstores.base import JobLookupError
 import pandas as pd
 import datetime
-from src.survey_for_training import EXCEL_FILE_TRAINING, EXCEL_FILE_DIET
 
+
+# Пути к таблицам
+EXCEL_FILE_TRAINING = "data/trainings.xlsx"
+EXCEL_FILE_DIET = "data/diets.xlsx"
 
 scheduler = AsyncIOScheduler()
 hours = (8, 18)
@@ -70,9 +73,9 @@ async def show_reminders_menu(message: types.Message):
         keyboard = create_reminders_keyboard()
         state_text = ""
         if check_user_in_reminders(user_id):
-            state_text = "Статус ваших напоминаний: Включены ✅"
+            state_text = "Статус ваших напоминаний:\nВключены ✅"
         else:
-            state_text = "Статус ваших напоминаний: Отключены ❌"
+            state_text = "Статус ваших напоминаний:\nОтключены ❌"
         await message.answer(state_text + "\n\nВыберите действие:", reply_markup=keyboard)
 
 
@@ -100,18 +103,22 @@ async def enable_notifications(callback_query: types.CallbackQuery, bot: Bot):
         notifications_enabled_users.add(user_id)
 
 
-async def disable_notifications(callback_query: types.CallbackQuery, bot: Bot):
+async def disable_notifications(callback_query: types.CallbackQuery):
     user_id = callback_query.from_user.id
 
+    remove_notifications(user_id)
+
+    await callback_query.message.edit_text("Напоминания отключены ❌")
+
+
+def remove_notifications(user_id: int):
     for hour in hours:
         try:
             # Удаление задачи на основе времени
             scheduler.remove_job(f"notification_{user_id}_{hour}")
         except JobLookupError:
             pass
-
-    await callback_query.message.edit_text("Напоминания отключены ❌")
-
+    
     if check_user_in_reminders(user_id):
         notifications_enabled_users.discard(user_id)
 
