@@ -9,7 +9,7 @@ from src.registration import RegistrationStates, process_name, process_gender, p
 from src.survey_for_training import *
 from src.my_plan import show_plan
 from src.exercise_library import show_exercise_categories, handle_back_to_categories, handle_category_selection, handle_exercise_selection
-from src.my_profile import show_profile_info
+from src.my_profile import show_profile_info, start_update_profile, handle_field_selection, process_value_update, UpdateProfile, handle_gender_selection, cancel_update
 from src.reminders import show_reminders_menu, enable_notifications, disable_notifications, on_startup
 from src.middleware_registration import RegistrationMiddleware
 from src.logging_middleware import LoggingMiddleware
@@ -32,7 +32,7 @@ dp = Dispatcher(storage=MemoryStorage())
 Регистрация ручек
 '''
 
-# Middleware для регистрации
+# Middleware для регистрации и логирования
 dp.message.middleware(RegistrationMiddleware())
 dp.callback_query.middleware(RegistrationMiddleware())
 dp.message.middleware(LoggingMiddleware())
@@ -83,7 +83,14 @@ dp.callback_query.register(disable_notifications, F.data == "turn_off_reminder")
 dp.message.register(show_profile_info, Command("my_profile"))
 dp.message.register(show_profile_info, F.text == "Мой профиль 👤")
 
-# Простое сообщение
+# Обновление профиля
+dp.message.register(start_update_profile, Command("update_profile"))
+dp.callback_query.register(handle_field_selection, F.data.startswith("update_"))
+dp.message.register(process_value_update, UpdateProfile.waiting_for_value)
+dp.callback_query.register(handle_gender_selection, F.data.startswith("gender_"))
+dp.callback_query.register(cancel_update, F.data.startswith("cancel_"))
+
+# Чат с тренером
 dp.message.register(simple_message)
 
 
