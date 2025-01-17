@@ -5,7 +5,7 @@ from aiogram.fsm.storage.memory import MemoryStorage
 from aiogram.filters import CommandStart, Command
 
 from src.default_commands import cmd_menu, cmd_start, handle_button_click, set_bot_commands
-from src.registration import RegistrationStates, process_age, process_height, process_name, process_weight
+from src.registration import RegistrationStates, process_name, process_gender, process_age, process_height, process_weight
 from src.survey_for_training import *
 from src.my_plan import show_plan
 from src.exercise_library import show_exercise_categories, handle_back_to_categories, handle_category_selection, handle_exercise_selection
@@ -36,6 +36,7 @@ dp.callback_query.middleware(LoggingMiddleware())
 
 dp.message.register(cmd_start, CommandStart())  # команда /start
 dp.message.register(process_name, RegistrationStates.waiting_for_name)
+dp.callback_query.register(process_gender, RegistrationStates.waiting_for_gender)
 dp.message.register(process_age, RegistrationStates.waiting_for_age)
 dp.message.register(process_height, RegistrationStates.waiting_for_height)
 dp.message.register(process_weight, RegistrationStates.waiting_for_weight)

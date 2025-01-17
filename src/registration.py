@@ -2,6 +2,7 @@ from src.utils import create_table, calculate_bmi
 import pandas as pd
 from aiogram import types
 from aiogram.fsm.context import FSMContext
+from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 from aiogram.fsm.state import State, StatesGroup
 
 
@@ -10,7 +11,7 @@ EXCEL_FILE = "data/users.xlsx"
 
 
 # Создание таблицы
-create_table(EXCEL_FILE, ["ID", "Name", "Age", "Height", "Weight", "BMI"])
+create_table(EXCEL_FILE, ["ID", "Name", "Gender", "Age", "Height", "Weight", "BMI"])
 
 
 def check_registered(user_id: str) -> str | None:
@@ -24,14 +25,34 @@ def check_registered(user_id: str) -> str | None:
 # Состояния при регистрации
 class RegistrationStates(StatesGroup):
     waiting_for_name = State()
+    waiting_for_gender = State()
     waiting_for_age = State()
     waiting_for_height = State()
     waiting_for_weight = State()
 
 
+def create_new_training_keyboard():
+    return InlineKeyboardMarkup(inline_keyboard=[
+        [InlineKeyboardButton(text="Мужской ♂️", callback_data="gender_male"),
+         InlineKeyboardButton(text="Женский ♀️", callback_data="gender_female")],
+    ])
+
+
 async def process_name(message: types.Message, state: FSMContext):
     await state.update_data(name=message.text)
-    await message.answer("Супер! Напишите, пожалуйста, сколько вам полных лет.")
+    await message.answer(
+        f"Рады познакомиться, {message.text}! Пожалуйста, укажите ваш пол",
+        reply_markup=create_new_training_keyboard())
+    await state.set_state(RegistrationStates.waiting_for_gender)
+
+
+async def process_gender(callback_query: types.CallbackQuery, state: FSMContext):
+    gender_mapping = {
+        "gender_male": "Мужской",
+        "gender_female": "Женский",
+    }
+    await state.update_data(gender=gender_mapping[callback_query.data])
+    await callback_query.message.edit_text("Супер! Напишите, пожалуйста, сколько вам полных лет.")
     await state.set_state(RegistrationStates.waiting_for_age)
 
 
@@ -76,8 +97,9 @@ async def process_weight(message: types.Message, state: FSMContext):
     df = pd.read_excel(EXCEL_FILE)
     new_data = pd.DataFrame([{
         "ID": message.from_user.id,
-        "Age": user_data["age"],
         "Name": user_data["name"],
+        "Gender": user_data["gender"],
+        "Age": user_data["age"],
         "Height": user_data["height"],
         "Weight": user_data["weight"],
         "BMI": str(calculate_bmi(int(user_data["height"]), int(user_data["weight"])))

@@ -23,6 +23,7 @@ async def show_profile_info(message: types.Message):
     await message.answer(
         "Ваш профиль:\n\n"
         f"Имя: {user_info['Name']}\n"
+        f"Пол: {user_info['Gender']}\n"
         f"Возраст: {user_info['Age']}\n"
         f"Рост: {user_info['Height']}\n"
         f"Вес: {user_info['Weight']}\n"

@@ -46,6 +46,7 @@ class RegistrationMiddleware(BaseMiddleware):
             # Если пользователь в процессе регистрации
             if state in [
                 RegistrationStates.waiting_for_name,
+                RegistrationStates.waiting_for_gender,
                 RegistrationStates.waiting_for_age,
                 RegistrationStates.waiting_for_height,
                 RegistrationStates.waiting_for_weight,
@@ -57,10 +58,11 @@ class RegistrationMiddleware(BaseMiddleware):
 
         # Проверяем регистрацию пользователя через кэш
         if not await check_registered_boolean(user_id):
+            text = "Вы не зарегистрированы. Пожалуйста, зарегистрируйтесь, чтобы пользоваться всеми функциями бота.\n\n/start - начать работу с ботом"
             if isinstance(event, Message):
-                await event.answer("Вы не зарегистрированы. Пожалуйста, зарегистрируйтесь, чтобы пользоваться всеми функциями бота.")
+                await event.answer(text)
             elif isinstance(event, CallbackQuery):
-                await event.message.answer("Вы не зарегистрированы. Пожалуйста, зарегистрируйтесь, чтобы пользоваться всеми функциями бота.")
+                await event.message.answer(text)
             return  # Прерываем обработку, если пользователь не зарегистрирован
 
         # Если пользователь зарегистрирован, продолжаем обработку
