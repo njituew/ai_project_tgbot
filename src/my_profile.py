@@ -20,6 +20,22 @@ async def show_profile_info(message: types.Message):
     
     user_info = get_info(user_id)
     
+    bmi = float(user_info['BMI'])
+    if bmi <= 16:
+        bmi_info = "выраженный дефицит массы тела"
+    elif bmi < 18.5:
+        bmi_info = "недостаточная масса тела"
+    elif bmi <= 25:
+        bmi_info = "норма"
+    elif bmi <= 30:
+        bmi_info = "избыточная масса тела (предожирение)"
+    elif bmi <= 35:
+        bmi_info = "ожирение первой степени"
+    elif bmi < 40:
+        bmi_info = "ожирение второй степени"
+    else:
+        bmi_info = "ожирение третьей степени (морбидное)"
+    
     await message.answer(
         "Ваш профиль:\n\n"
         f"Имя: {user_info['Name']}\n"
@@ -27,5 +43,6 @@ async def show_profile_info(message: types.Message):
         f"Возраст: {user_info['Age']}\n"
         f"Рост: {user_info['Height']}\n"
         f"Вес: {user_info['Weight']}\n"
-        f"Индекс массы тела: {user_info['BMI']}"
+        f"Индекс массы тела: {user_info['BMI']} ({bmi_info}*)\n\n"
+        f"* - данные предоставлены таблицей ИМТ согласно ВОЗ и не являются диагнозом"
     )
