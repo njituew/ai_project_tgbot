@@ -4,7 +4,7 @@ from aiogram import Bot, Dispatcher, F
 from aiogram.fsm.storage.memory import MemoryStorage
 from aiogram.filters import CommandStart, Command
 
-from src.default_commands import cmd_menu, cmd_start, handle_button_click, set_bot_commands
+from src.default_commands import cmd_menu, cmd_start, cmd_commands, handle_button_click, set_bot_commands
 from src.registration import RegistrationStates, process_name, process_gender, process_age, process_height, process_weight
 from src.survey_for_training import *
 from src.my_plan import show_plan
@@ -42,7 +42,9 @@ dp.message.register(process_height, RegistrationStates.waiting_for_height)
 dp.message.register(process_weight, RegistrationStates.waiting_for_weight)
 
 dp.message.register(cmd_menu, Command("menu"))  # команда /menu
+dp.message.register(cmd_commands, Command("commands"))
 
+dp.message.register(start_survey, Command("generate_plan"))
 dp.message.register(start_survey, F.text == "Создать тренировку 🏋️‍♂️")
 dp.callback_query.register(new_training, F.data.startswith("survey_training_new"))
 dp.callback_query.register(set_goal, F.data.startswith("goal_"))
@@ -50,20 +52,24 @@ dp.callback_query.register(set_level, F.data.startswith("level_"))
 dp.callback_query.register(set_location, F.data.startswith("location_"))
 dp.callback_query.register(set_wishes, TrainingStates.waiting_for_wishes)
 
+dp.message.register(show_plan, Command("my_plan"))
 dp.message.register(show_plan, F.text == "Мой план 📋")
 dp.callback_query.register(new_training, F.data == "my_plan_new")
 dp.callback_query.register(remove_training, F.data == "my_plan_remove")
 
 dp.message.register(show_exercise_categories, F.text == "Упражнения 📚")
+dp.message.register(show_exercise_categories, Command("exercises"))
 dp.callback_query.register(handle_category_selection, F.data.startswith("category_"))
 dp.callback_query.register(handle_exercise_selection, F.data.startswith("exercise_"))
 dp.callback_query.register(handle_back_to_categories, F.data == "back_to_categories")
 
+dp.message.register(show_reminders_menu, Command("reminder"))
 dp.message.register(show_reminders_menu, F.text == "Напоминания ⏰")
 dp.callback_query.register(new_training, F.data == "reminders_new_training")
 dp.callback_query.register(enable_notifications, F.data == "turn_on_reminder")
 dp.callback_query.register(disable_notifications, F.data == "turn_off_reminder")
 
+dp.message.register(show_profile_info, Command("my_profile"))
 dp.message.register(show_profile_info, F.text == "Мой профиль 👤")
 
 dp.message.register(handle_button_click)

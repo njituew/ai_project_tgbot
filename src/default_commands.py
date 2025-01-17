@@ -35,6 +35,19 @@ async def cmd_menu(message: types.Message):
         resize_keyboard=True
     )
     await message.answer("Меню открыто", reply_markup=keyboard)
+    
+    
+async def cmd_commands(message: types.Message):
+    await message.answer(
+        f"Список команд бота:\n\n"
+        f"/start - Начать работу с ботом\n"
+        f"/menu - Открыть главное меню\n"
+        f"/generate_plan - Создать индивидуальный план тренировок\n"
+        f"/my_plan - Открыть индивидуальный план тренировок\n"
+        f"/exercises - Открыть библиотеку упражнений\n"
+        f"/reminder - Управление напоминаниями\n"
+        f"/my_profile - Ваш профиль"
+    )
 
 
 # Ручка для кнопок
@@ -59,5 +72,11 @@ async def set_bot_commands(bot: Bot):
     commands = [
         BotCommand(command="start", description="Начать работу с ботом"),
         BotCommand(command="menu", description="Открыть главное меню"),
+        BotCommand(command="generate_plan", description="Создать индивидуальный план тренировок"),
+        BotCommand(command="my_plan", description="Открыть индивидуальный план тренировок"),
+        BotCommand(command="exercises", description="Открыть библиотеку упражнений"),
+        BotCommand(command="reminder", description="Управление напоминаниями"),
+        BotCommand(command="my_profile", description="Ваш профиль"),
+        BotCommand(command="commands", description="Список команд бота"),
     ]
     await bot.set_my_commands(commands)

@@ -182,7 +182,11 @@ async def set_wishes(message: types.Message, state: FSMContext):
     df = pd.concat([df, diet_data], ignore_index=True)
     df.to_excel(EXCEL_FILE_DIET, index=False)
     
-    await message.answer("Ваша тренировка создана успешно! 👍")
+    await message.answer(
+        f"Ваша тренировка создана успешно! 👍\n\n"
+        f"/my_plan - посмотреть план тренировок\n"
+        f"/reminder - управление напоминаниями"
+    )
     
     await state.clear()  # Завершаем FSM
 
