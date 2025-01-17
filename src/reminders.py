@@ -7,7 +7,6 @@ from apscheduler.jobstores.base import JobLookupError
 import pandas as pd
 import datetime
 from src.survey_for_training import EXCEL_FILE_TRAINING, EXCEL_FILE_DIET
-from src.utils import create_table
 
 
 scheduler = AsyncIOScheduler()
@@ -64,7 +63,7 @@ async def show_reminders_menu(message: types.Message):
             "Нельзя включить напоминания, так как на данный момент у вас нет плана тренировок.\n\n"
             "Создайте свой персональный план и добивайтесь успехов вместе с нашим ботом! 🏆",
             reply_markup=InlineKeyboardMarkup(inline_keyboard=[
-                [InlineKeyboardButton(text="Создать тренировку 🏋️‍♂️", callback_data="new_training")]
+                [InlineKeyboardButton(text="Создать тренировку 🏋️‍♂️", callback_data="reminders_new_training")]
             ])
         )
     else:

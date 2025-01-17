@@ -26,18 +26,10 @@ def check_training(user_id: str) -> bool:
     return not user.empty
 
 
-# Состояния при опросе
-class TrainingSurvey(StatesGroup):
-    new_training = State()
-    goal = State()  # Состояние для цели тренировок
-    level = State()  # Состояние для уровня сложности
-    location = State()  # Состояние для места тренировок
-
-
 def create_new_training_keyboard():
     return InlineKeyboardMarkup(inline_keyboard=[
-        [InlineKeyboardButton(text="Создать новую тренировку 🆕", callback_data="yes")],
-        [InlineKeyboardButton(text="Отмена ❌", callback_data="cancel")],
+        [InlineKeyboardButton(text="Создать новую тренировку 🆕", callback_data="survey_training_new")],
+        [InlineKeyboardButton(text="Отмена ❌", callback_data="survey_training_new_cancel")],
     ])
 
 
@@ -64,30 +56,40 @@ def create_location_keyboard():
     ])
 
 
-async def start_survey(message: types.Message, state: FSMContext):
+async def start_survey(message: types.Message): #, state: FSMContext):
     user_id = message.from_user.id
     if check_training(user_id):
         await message.answer(
             "У вас уже есть тренировка. Создать новую?",
             reply_markup=create_new_training_keyboard()
         )
-        await state.set_state(TrainingSurvey.new_training)
     else:
         await message.answer("Какова цель тренировок?", reply_markup=create_goal_keyboard())
-        await state.set_state(TrainingSurvey.goal)
 
 
 async def new_training(callback_query: types.CallbackQuery, state: FSMContext):
-    if callback_query.data == "yes" or callback_query.data == "new_training":
-        user_id = callback_query.from_user.id
+    user_id = callback_query.from_user.id
+    
+    # Если мы пришли из my_plan.py
+    if callback_query.data == "my_plan_new":
+        await callback_query.message.edit_text("Ваш предыдущий индивидуалный план удалён.")
+        remove_user(EXCEL_FILE_TRAINING, user_id)
+        remove_user(EXCEL_FILE_DIET, user_id)
+        await callback_query.message.answer(
+            "Какова цель тренировок?", reply_markup=create_goal_keyboard()
+        )
+        
+    # Если мы из "Создать тренировку" и нажали "ДА" или пришли из напоминаний
+    elif callback_query.data == "survey_training_new" or callback_query.data == "reminders_new_training":
         remove_user(EXCEL_FILE_TRAINING, user_id)
         remove_user(EXCEL_FILE_DIET, user_id)
         
         await callback_query.message.edit_text(
             "Какова цель тренировок?", reply_markup=create_goal_keyboard()
         )
-        await state.set_state(TrainingSurvey.goal)
-    else:
+    
+    # Если мы из "Создать тренировку" и нажали "НЕТ"
+    else:   # survey_training_new_cancel
         await callback_query.message.edit_text("Создание тренировки отменено ❌")
         await state.clear()  # Завершаем FSM
 
@@ -103,7 +105,6 @@ async def set_goal(callback_query: types.CallbackQuery, state: FSMContext):
     await callback_query.message.edit_text(
         "Каков ваш уровень?", reply_markup=create_level_keyboard()
     )
-    await state.set_state(TrainingSurvey.level)
 
 
 async def set_level(callback_query: types.CallbackQuery, state: FSMContext):
@@ -117,7 +118,6 @@ async def set_level(callback_query: types.CallbackQuery, state: FSMContext):
     await callback_query.message.edit_text(
         "Где будут проходить тренировки?", reply_markup=create_location_keyboard()
     )
-    await state.set_state(TrainingSurvey.location)
 
 
 async def set_location(callback_query: types.CallbackQuery, state: FSMContext):
@@ -173,3 +173,10 @@ async def set_location(callback_query: types.CallbackQuery, state: FSMContext):
     await callback_query.message.answer("Ваша тренировка создана успешно! 👍")
     
     await state.clear()  # Завершаем FSM
+
+
+async def remove_training(callback_query: types.CallbackQuery):
+    user_id = callback_query.from_user.id
+    remove_user(EXCEL_FILE_TRAINING, user_id)
+    remove_user(EXCEL_FILE_DIET, user_id)
+    await callback_query.message.edit_text("Ваш индивидуалный план удалён.")

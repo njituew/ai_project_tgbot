@@ -1,16 +1,14 @@
 from aiogram import types
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
-from aiogram.fsm.context import FSMContext
 
 import pandas as pd
-from src.survey_for_training import check_training, EXCEL_FILE_TRAINING, EXCEL_FILE_DIET, create_new_training_keyboard, create_goal_keyboard, TrainingSurvey
-from src.utils import remove_user
+from src.survey_for_training import check_training, EXCEL_FILE_TRAINING, EXCEL_FILE_DIET, create_new_training_keyboard
 
 
 def create_my_training_keyboard():
     return InlineKeyboardMarkup(inline_keyboard=[
-        [InlineKeyboardButton(text="Создать новую тренировку 🆕", callback_data="new_plan")],
-        [InlineKeyboardButton(text="Удалить свою тренировку 🗑️", callback_data="remove_plan")],
+        [InlineKeyboardButton(text="Создать новую тренировку 🆕", callback_data="my_plan_new")],
+        [InlineKeyboardButton(text="Удалить свою тренировку 🗑️", callback_data="my_plan_remove")],
     ])
 
 
@@ -54,7 +52,7 @@ def get_plan(user_id: str):
     return plan_text.strip()
 
 
-async def show_plan(message: types.Message, state: FSMContext):
+async def show_plan(message: types.Message):
     user_id = message.from_user.id
     
     if check_training(user_id):
@@ -68,23 +66,3 @@ async def show_plan(message: types.Message, state: FSMContext):
             "У вас нет плана тренировок. Хотите его создать?",
             reply_markup=create_new_training_keyboard()
         )
-        await state.set_state(TrainingSurvey.new_training)
-
-
-async def plan_operation(callback_query: types.CallbackQuery, state: FSMContext):
-    user_id = callback_query.from_user.id
-    
-    if callback_query.data == "new_plan":
-        remove_user(EXCEL_FILE_TRAINING, user_id)
-        remove_user(EXCEL_FILE_DIET, user_id)
-        await callback_query.message.edit_text("Ваш предыдущий индивидуалный план удалён.")
-        
-        await callback_query.message.answer(
-            "Какова цель тренировок?", reply_markup=create_goal_keyboard()
-        )
-        await state.set_state(TrainingSurvey.goal)
-        
-    elif callback_query.data == "remove_plan":
-        remove_user(EXCEL_FILE_TRAINING, user_id)
-        remove_user(EXCEL_FILE_DIET, user_id)
-        await callback_query.message.edit_text("Ваш индивидуалный план удалён.")
