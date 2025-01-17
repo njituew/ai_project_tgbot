@@ -85,7 +85,7 @@ dp.message.register(show_profile_info, Command("my_profile"))
 dp.message.register(show_profile_info, F.text == "Мой профиль 👤")
 
 # Опрос
-dp.message.register(open_workout_survey, F.text == "Опрос💬")
+dp.message.register(open_workout_survey, F.text == "Опрос 💬")
 dp.callback_query.register(all_exercises, F.data == "all_exercises_are_completed")
 dp.callback_query.register(some_exercises, F.data == "some_exercises_are_completed")
 dp.callback_query.register(without_exercises, F.data == "not_today")
