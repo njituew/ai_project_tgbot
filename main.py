@@ -14,6 +14,7 @@ from src.reminders import show_reminders_menu, enable_notifications, disable_not
 from src.middleware_registration import RegistrationMiddleware
 from src.logging_middleware import LoggingMiddleware
 from src.utils import get_bot_token
+from src.workout_survey import open_workout_survey, some_exercises, defer_survey, without_exercises, all_exercises
 
 
 '''
@@ -82,6 +83,13 @@ dp.callback_query.register(disable_notifications, F.data == "turn_off_reminder")
 # Мой профиль
 dp.message.register(show_profile_info, Command("my_profile"))
 dp.message.register(show_profile_info, F.text == "Мой профиль 👤")
+
+# Опрос
+dp.message.register(open_workout_survey, F.text == "Опрос💬")
+dp.callback_query.register(all_exercises, F.data == "all_exercises_are_completed")
+dp.callback_query.register(some_exercises, F.data == "some_exercises_are_completed")
+dp.callback_query.register(without_exercises, F.data == "not_today")
+dp.callback_query.register(defer_survey, F.data == "proceed_to_survey_later")
 
 # Простое сообщение
 dp.message.register(simple_message)

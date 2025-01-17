@@ -100,7 +100,7 @@ async def enable_notifications(callback_query: types.CallbackQuery, bot: Bot):
         notifications_enabled_users.add(user_id)
 
 
-async def disable_notifications(callback_query: types.CallbackQuery, bot: Bot):
+async def disable_notifications(callback_query: types.CallbackQuery):
     user_id = callback_query.from_user.id
 
     for hour in hours:
