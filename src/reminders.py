@@ -10,7 +10,7 @@ from src.survey_for_training import EXCEL_FILE_TRAINING, EXCEL_FILE_DIET
 
 
 scheduler = AsyncIOScheduler()
-hours = (8, 18, 11)
+hours = (8, 18)
 
 
 def plan_for_today(user_id: int):
@@ -78,7 +78,7 @@ async def enable_notifications(callback_query: types.CallbackQuery, bot: Bot):
         # Создание задачи на основе времени
         scheduler.add_job(
             send_notification,
-            CronTrigger(hour=hour, minute=45),
+            CronTrigger(hour=hour, minute=0),
             args=[bot, user_id],
             id=f"notification_{user_id}_{hour}",  # Уникальный ID задачи
             replace_existing=True                 # Заменить задачу, если ID совпадает
