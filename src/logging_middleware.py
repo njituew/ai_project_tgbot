@@ -4,7 +4,9 @@ from aiogram.types import Message, CallbackQuery, TelegramObject
 from datetime import datetime
 from src.utils import create_table
 
+
 EXCEL_LOG_FILE = "data/logs.xlsx"
+
 
 class LoggingMiddleware(BaseMiddleware):
     def __init__(self):

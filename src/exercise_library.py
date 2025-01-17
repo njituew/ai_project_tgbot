@@ -3,6 +3,7 @@ from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 import json
 from src.utils import format_exercise_info
 
+
 JSON_FILE_PATH = "src/exercise_library_dict.json"
 
 with open(JSON_FILE_PATH, "r", encoding="utf-8") as file:

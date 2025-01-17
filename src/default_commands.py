@@ -35,8 +35,11 @@ async def cmd_menu(message: types.Message):
         resize_keyboard=True
     )
     await message.answer("Меню открыто", reply_markup=keyboard)
-    
-    
+
+
+'''
+Команда /commands
+'''
 async def cmd_commands(message: types.Message):
     await message.answer(
         f"Список команд бота:\n\n"
@@ -50,8 +53,7 @@ async def cmd_commands(message: types.Message):
     )
 
 
-# Ручка для кнопок
-async def handle_button_click(message: types.Message, state: FSMContext):
+async def simple_message(message: types.Message, state: FSMContext):
     current_state = await state.get_state()
     # Если пользователь находится в состоянии ожидания пожеланий, не обрабатываем это сообщение
     if current_state == TrainingStates.waiting_for_wishes:
@@ -67,6 +69,7 @@ async def handle_button_click(message: types.Message, state: FSMContext):
     user_info = get_info(user_id)
     user_training = get_plan(user_id) if check_training(user_id) else {}
     await message.answer(simple_message_to_ai(text, user_info, user_training))
+
 
 async def set_bot_commands(bot: Bot):
     commands = [
