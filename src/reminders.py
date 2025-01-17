@@ -7,10 +7,16 @@ from apscheduler.jobstores.base import JobLookupError
 import pandas as pd
 import datetime
 from src.survey_for_training import EXCEL_FILE_TRAINING, EXCEL_FILE_DIET
+from src.utils import create_table
 
 
 scheduler = AsyncIOScheduler()
 hours = (8, 18)
+notifications_enabled_users = set()
+
+
+def check_user_in_reminders(user_id: int) -> bool:
+    return user_id in notifications_enabled_users
 
 
 def plan_for_today(user_id: int):
@@ -63,7 +69,12 @@ async def show_reminders_menu(message: types.Message):
         )
     else:
         keyboard = create_reminders_keyboard()
-        await message.answer("Выберите действие для напоминаний:", reply_markup=keyboard)
+        state_text = ""
+        if check_user_in_reminders(user_id):
+            state_text = "Статус ваших напоминаний: Включены ✅"
+        else:
+            state_text = "Статус ваших напоминаний: Отключены ❌"
+        await message.answer(state_text + "\n\nВыберите действие:", reply_markup=keyboard)
 
 
 # Функция для отправки сообщения пользователю
@@ -86,6 +97,9 @@ async def enable_notifications(callback_query: types.CallbackQuery, bot: Bot):
     
     await callback_query.message.edit_text("Напоминания включены ✅\nТеперь они будут приходить вам каждый день в 08:00 и 18:00.")
 
+    if not check_user_in_reminders(user_id):
+        notifications_enabled_users.add(user_id)
+
 
 async def disable_notifications(callback_query: types.CallbackQuery, bot: Bot):
     user_id = callback_query.from_user.id
@@ -98,6 +112,10 @@ async def disable_notifications(callback_query: types.CallbackQuery, bot: Bot):
             pass
 
     await callback_query.message.edit_text("Напоминания отключены ❌")
+
+    if check_user_in_reminders(user_id):
+        notifications_enabled_users.discard(user_id)
+
 
 async def on_startup():
     scheduler.start()
