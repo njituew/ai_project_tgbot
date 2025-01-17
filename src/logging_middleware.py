@@ -36,7 +36,7 @@ class LoggingMiddleware(BaseMiddleware):
             self.log_to_excel(log_data)
         
         print(
-            f"{log_data["Тип"]} by {event.from_user.username}: {log_data["Содержание"]}; ID: {log_data["ID Пользователя"]}, {log_data["Время"]}",
+            f'{log_data["Тип"]} by {event.from_user.username}: {log_data["Содержание"]}; ID: {log_data["ID Пользователя"]}, {log_data["Время"]}',
             flush=True
         )
 
