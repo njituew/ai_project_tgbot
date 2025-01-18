@@ -1,5 +1,6 @@
 from aiogram import types
 from src.registration import EXCEL_FILE
+from src.utils import calculate_bmi
 import pandas as pd
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 from aiogram.fsm.state import StatesGroup, State
@@ -107,8 +108,8 @@ def update_user_info(user_id: str, field: str, value):
     # Пересчет BMI, если обновляется вес или рост
     if field in ["Weight", "Height"]:
         weight = float(df.loc[user_index, "Weight"].values[0])
-        height = float(df.loc[user_index, "Height"].values[0]) / 100
-        bmi = round(weight / (height ** 2), 2) if height > 0 else 0
+        height = float(df.loc[user_index, "Height"].values[0])
+        bmi = calculate_bmi(height, weight)
         df.loc[user_index, "BMI"] = bmi
 
     # Сохраняем файл
