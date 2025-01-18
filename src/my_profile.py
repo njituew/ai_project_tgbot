@@ -164,16 +164,25 @@ async def process_value_update(message: types.Message, state: FSMContext):
     try:
         # Валидация значений
         if field == "Age":
-            if not value.isdigit() or not (1 <= int(value) <= 150):
-                await message.answer("Возраст должен быть числом от 1 до 150. Попробуйте снова.")
+            if not value.isdigit():
+                await message.answer("Пожалуйста, укажите возраст числом:")
+                return
+            if not (1 <= int(value) <= 150):
+                await message.answer("Пожалуйста, укажите свой настоящий возраст:")
                 return
         elif field == "Height":
-            if not value.isdigit() or not (100 <= int(value) <= 300):
-                await message.answer("Рост должен быть числом от 100 до 300 см. Попробуйте снова.")
+            if not value.isdigit():
+                await message.answer("Пожалуйста, укажите рост числом:")
+                return
+            if not (100 <= int(value) <= 300):
+                await message.answer("Пожалуйста, укажите свой настоящий рост:")
                 return
         elif field == "Weight":
-            if not value.isdigit() or not (1 <= int(value) <= 600):
-                await message.answer("Вес должен быть числом от 1 до 600 кг. Попробуйте снова.")
+            if not value.isdigit():
+                await message.answer("Пожалуйста, укажите вес числом:")
+                return
+            if not (1 <= int(value) <= 600):
+                await message.answer("Пожалуйста, укажите свой настоящий вес:")
                 return
         
         field_map1 = {
