@@ -32,7 +32,7 @@ async def cmd_menu(message: types.Message):
             [KeyboardButton(text="Мой план 📋"), KeyboardButton(text="Напоминания ⏰")],
             [KeyboardButton(text="Упражнения 📚")],
             [KeyboardButton(text="Мой профиль 👤"), KeyboardButton(text="Моя статистика 📈")],
-            [KeyboardButton(text="Опрос 💬")]
+            [KeyboardButton(text="Опрос после тренировки 💬")]
         ],
         resize_keyboard=True
     )

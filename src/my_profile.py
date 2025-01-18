@@ -47,9 +47,16 @@ async def show_profile_info(message: types.Message):
         f"Рост: {user_info['Height']}\n"
         f"Вес: {user_info['Weight']}\n"
         f"Индекс массы тела: {user_info['BMI']} ({bmi_info}*)\n\n"
-        f"* - данные предоставлены таблицей ИМТ согласно ВОЗ и не являются диагнозом\n\n"
-        f"/update_profile - обновить профиль"
+        f"* - данные предоставлены таблицей ИМТ согласно ВОЗ и не являются диагнозом",
+        reply_markup=create_update_button()
     )
+
+
+def create_update_button():
+    keyboard = InlineKeyboardMarkup(inline_keyboard=[
+        [InlineKeyboardButton(text="Обновить профиль", callback_data="update_profile")],
+    ])
+    return keyboard
 
 
 def create_select_gender_keyboard():
@@ -105,6 +112,11 @@ def update_user_info(user_id: str, field: str, value):
 async def start_update_profile(message: types.Message):
     keyboard = create_update_keyboard()
     await message.answer("Что вы хотите изменить?", reply_markup=keyboard)
+
+
+async def handle_update_profile(callback_query: types.CallbackQuery, state: FSMContext):
+    await start_update_profile(callback_query.message)
+    await callback_query.answer()
 
 
 async def handle_field_selection(callback_query: types.CallbackQuery, state: FSMContext):
