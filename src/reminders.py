@@ -6,6 +6,7 @@ from apscheduler.triggers.cron import CronTrigger
 from apscheduler.jobstores.base import JobLookupError
 import pandas as pd
 import datetime
+import time
 
 
 # Пути к таблицам
@@ -13,8 +14,11 @@ EXCEL_FILE_TRAINING = "data/trainings.xlsx"
 EXCEL_FILE_DIET = "data/diets.xlsx"
 
 scheduler = AsyncIOScheduler()
-hours = (8, 18)
 notifications_enabled_users = set()
+
+# Время отправки уведомлений
+localtime_offset = time.localtime().tm_gmtoff // 3600
+hours = (5+localtime_offset, 15+localtime_offset)
 
 
 def check_user_in_reminders(user_id: int) -> bool:
