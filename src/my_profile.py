@@ -88,7 +88,6 @@ def create_update_keyboard():
 
 
 class UpdateProfile(StatesGroup):
-    waiting_for_field = State()
     waiting_for_value = State()
 
 
@@ -105,8 +104,16 @@ def update_user_info(user_id: str, field: str, value):
     # Обновляем значение
     df.loc[user_index, field] = value
 
+    # Пересчет BMI, если обновляется вес или рост
+    if field in ["Weight", "Height"]:
+        weight = float(df.loc[user_index, "Weight"].values[0])
+        height = float(df.loc[user_index, "Height"].values[0]) / 100
+        bmi = round(weight / (height ** 2), 2) if height > 0 else 0
+        df.loc[user_index, "BMI"] = bmi
+
     # Сохраняем файл
     df.to_excel(EXCEL_FILE, index=False)
+
 
 
 async def start_update_profile(message: types.Message):
@@ -128,13 +135,21 @@ async def handle_field_selection(callback_query: types.CallbackQuery, state: FSM
         "update_weight": "Weight",
     }
 
+    field_map1 = {
+        "Name": "имени",
+        "Age": "возраста",
+        "Height": "роста",
+        "Weight": "веса",
+    }
+
     field = field_map.get(callback_query.data)
+    field1 = field_map1.get(field)
     if field == "Gender":
         await state.update_data(field=field)
-        await callback_query.message.edit_text("Выберите новое значение для поля 'Gender':", reply_markup=create_select_gender_keyboard())
+        await callback_query.message.edit_text("Выберите новое значение пола:", reply_markup=create_select_gender_keyboard())
     elif field:
         await state.update_data(field=field)
-        await callback_query.message.edit_text(f"Введите новое значение для поля '{field}':", reply_markup=create_cancel_button_keyboard())
+        await callback_query.message.edit_text(f"Введите новое значение {field1}:", reply_markup=create_cancel_button_keyboard())
         await state.set_state(UpdateProfile.waiting_for_value)
 
     await callback_query.answer()
@@ -147,8 +162,39 @@ async def process_value_update(message: types.Message, state: FSMContext):
     value = message.text
 
     try:
+        # Валидация значений
+        if field == "Age":
+            if not value.isdigit() or not (1 <= int(value) <= 150):
+                await message.answer("Возраст должен быть числом от 1 до 150. Попробуйте снова.")
+                return
+        elif field == "Height":
+            if not value.isdigit() or not (100 <= int(value) <= 300):
+                await message.answer("Рост должен быть числом от 100 до 300 см. Попробуйте снова.")
+                return
+        elif field == "Weight":
+            if not value.isdigit() or not (1 <= int(value) <= 600):
+                await message.answer("Вес должен быть числом от 1 до 600 кг. Попробуйте снова.")
+                return
+        
+        field_map1 = {
+            "Name": "Имя",
+            "Age": "Возраст",
+            "Height": "Рост",
+            "Weight": "Вес",
+        }
+        field1 = field_map1.get(field)
+
+        # Обновление информации
         update_user_info(user_id, field, value)
-        await message.answer(f"Поле '{field}' успешно обновлено!")
+
+        if field in ["Height", "Weight"]:
+            user_info = get_info(user_id)
+            bmi = user_info["BMI"]
+            await message.answer(f"{field1} успешно обновлено! Новый BMI: {bmi}")
+        elif field == "Name":
+            await message.answer(f"{field1} успешно обновлено!")
+        else:
+            await message.answer(f"{field1} успешно обновлен!")
     except ValueError as e:
         await message.answer(f"Ошибка: {str(e)}")
     except Exception as e:
@@ -171,7 +217,7 @@ async def handle_gender_selection(callback_query: types.CallbackQuery, state: FS
 
         try:
             update_user_info(user_id, field, gender)
-            await callback_query.message.edit_text(f"Пол успешно обновлён на '{gender}'!")
+            await callback_query.message.edit_text(f"Пол успешно обновлён!")
         except ValueError as e:
             await callback_query.message.edit_text(f"Ошибка: {str(e)}")
         except Exception as e:
