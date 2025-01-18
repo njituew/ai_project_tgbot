@@ -19,12 +19,7 @@ def get_info(user_id: str) -> dict:
     return user_data.drop(columns=["ID"]).iloc[0].to_dict()
 
 
-async def show_profile_info(message: types.Message):
-    user_id = message.from_user.id
-    
-    user_info = get_info(user_id)
-    
-    bmi = float(user_info['BMI'])
+def bmi_info(bmi: float) -> str:
     if bmi <= 16:
         bmi_info = "выраженный дефицит массы тела"
     elif bmi < 18.5:
@@ -39,6 +34,15 @@ async def show_profile_info(message: types.Message):
         bmi_info = "ожирение второй степени"
     else:
         bmi_info = "ожирение третьей степени (морбидное)"
+    return bmi_info
+
+
+async def show_profile_info(message: types.Message):
+    user_id = message.from_user.id
+    
+    user_info = get_info(user_id)
+    
+    bmi = float(user_info['BMI'])
     
     await message.answer(
         "Ваш профиль:\n\n"
@@ -47,7 +51,7 @@ async def show_profile_info(message: types.Message):
         f"Возраст: {user_info['Age']}\n"
         f"Рост: {user_info['Height']}\n"
         f"Вес: {user_info['Weight']}\n"
-        f"Индекс массы тела: {user_info['BMI']} ({bmi_info}*)\n\n"
+        f"Индекс массы тела: {user_info['BMI']} ({bmi_info(bmi)}*)\n\n"
         f"* - данные предоставлены таблицей ИМТ согласно ВОЗ и не являются диагнозом",
         reply_markup=create_update_button()
     )
@@ -116,7 +120,6 @@ def update_user_info(user_id: str, field: str, value):
     df.to_excel(EXCEL_FILE, index=False)
 
 
-
 async def start_update_profile(message: types.Message):
     keyboard = create_update_keyboard()
     await message.answer("Что вы хотите изменить?", reply_markup=keyboard)
@@ -168,21 +171,21 @@ async def process_value_update(message: types.Message, state: FSMContext):
             if not value.isdigit():
                 await message.answer("Пожалуйста, укажите возраст числом:")
                 return
-            if not (1 <= int(value) <= 150):
+            elif not (1 <= int(value) <= 150):
                 await message.answer("Пожалуйста, укажите свой настоящий возраст:")
                 return
         elif field == "Height":
             if not value.isdigit():
                 await message.answer("Пожалуйста, укажите рост числом:")
                 return
-            if not (100 <= int(value) <= 300):
+            elif not (100 <= int(value) <= 300):
                 await message.answer("Пожалуйста, укажите свой настоящий рост:")
                 return
         elif field == "Weight":
             if not value.isdigit():
                 await message.answer("Пожалуйста, укажите вес числом:")
                 return
-            if not (1 <= int(value) <= 600):
+            elif not (1 <= int(value) <= 600):
                 await message.answer("Пожалуйста, укажите свой настоящий вес:")
                 return
         
@@ -200,7 +203,10 @@ async def process_value_update(message: types.Message, state: FSMContext):
         if field in ["Height", "Weight"]:
             user_info = get_info(user_id)
             bmi = user_info["BMI"]
-            await message.answer(f"{field1} успешно обновлено! Новый BMI: {bmi}")
+            await message.answer(
+                f"{field1} успешно обновлен!\nВаш ИМТ пересчитан: {bmi} ({bmi_info(float(bmi))}*)\n"
+                f"* - данные предоставлены таблицей ИМТ согласно ВОЗ и не являются диагнозом",
+            )
         elif field == "Name":
             await message.answer(f"{field1} успешно обновлено!")
         else:
