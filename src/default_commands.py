@@ -52,6 +52,7 @@ async def cmd_commands(message: types.Message):
         f"/exercises - Открыть библиотеку упражнений\n"
         f"/reminder - Управление напоминаниями\n"
         f"/my_profile - Ваш профиль"
+        f"/update_profile - Обновить профиль\n"
     )
 
 
@@ -82,6 +83,7 @@ async def set_bot_commands(bot: Bot):
         BotCommand(command="exercises", description="Открыть библиотеку упражнений"),
         BotCommand(command="reminder", description="Управление напоминаниями"),
         BotCommand(command="my_profile", description="Ваш профиль"),
+        BotCommand(command="update_profile", description="Обновить профиль"),
         BotCommand(command="commands", description="Список команд бота"),
     ]
     await bot.set_my_commands(commands)

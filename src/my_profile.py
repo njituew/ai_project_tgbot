@@ -47,7 +47,8 @@ async def show_profile_info(message: types.Message):
         f"Рост: {user_info['Height']}\n"
         f"Вес: {user_info['Weight']}\n"
         f"Индекс массы тела: {user_info['BMI']} ({bmi_info}*)\n\n"
-        f"* - данные предоставлены таблицей ИМТ согласно ВОЗ и не являются диагнозом"
+        f"* - данные предоставлены таблицей ИМТ согласно ВОЗ и не являются диагнозом\n\n"
+        f"/update_profile - обновить профиль"
     )
 
 
@@ -74,7 +75,7 @@ def create_update_keyboard():
         [InlineKeyboardButton(text="Возраст", callback_data="update_age")],
         [InlineKeyboardButton(text="Рост", callback_data="update_height")],
         [InlineKeyboardButton(text="Вес", callback_data="update_weight")],
-        [InlineKeyboardButton(text="Отмена", callback_data="cancel_update")],
+        [InlineKeyboardButton(text="Отмена ❌", callback_data="cancel_update")],
     ])
     return keyboard
 
