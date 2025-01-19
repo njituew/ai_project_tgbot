@@ -1,6 +1,8 @@
 from aiogram import types
 from src.registration import EXCEL_FILE
-from src.utils import calculate_bmi
+from src.utils import calculate_bmi, create_table, remove_user
+from src.survey_for_training import check_training, EXCEL_FILE_TRAINING, EXCEL_FILE_DIET
+from src.reminders import remove_notifications
 import pandas as pd
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 from aiogram.fsm.state import StatesGroup, State
@@ -57,7 +59,8 @@ async def show_profile_info(message: types.Message):
 
 def create_update_button():
     keyboard = InlineKeyboardMarkup(inline_keyboard=[
-        [InlineKeyboardButton(text="Обновить профиль", callback_data="update_profile")],
+        [InlineKeyboardButton(text="Обновить профиль 🔁", callback_data="update_profile")],
+        [InlineKeyboardButton(text="Удалить свой профиль 🗑️", callback_data="remove_profile")],
     ])
     return keyboard
 
@@ -91,7 +94,8 @@ def create_update_keyboard():
 
 
 class UpdateProfile(StatesGroup):
-    waiting_for_value = State()
+    waiting_for_update_value = State()
+    waiting_for_bot_score = State()
 
 
 def update_user_info(user_id: str, field: str, value):
@@ -239,3 +243,59 @@ async def handle_gender_selection(callback_query: types.CallbackQuery, state: FS
 async def cancel_update(callback_query: types.CallbackQuery, state: FSMContext):
     await callback_query.message.edit_text("Обновление отменено ❌")
     await state.clear()
+
+
+REMOVED_USERS_EXCEL = "data/removed_users.xlsx"
+colums = ["ID", "Reason", "Score"]
+create_table(REMOVED_USERS_EXCEL, colums)
+
+
+async def remove_profile_reson(callback_query: types.CallbackQuery, state: FSMContext):
+    await callback_query.message.edit_text("Пожалуйста, укажите причину, почему вы решили перестать пользоваться нашим ботом?",
+        reply_markup=InlineKeyboardMarkup(inline_keyboard=[
+        [InlineKeyboardButton(text="Не вижу смысла дальше пользоваться", callback_data="remove_profile_ans_no_reson"), InlineKeyboardButton(text="Пользуюсь услугами тренера", callback_data="remove_profile_ans_new_trainer")],
+        [InlineKeyboardButton(text="Пользуюсь альтернативным ботом", callback_data="remove_profile_ans_another_bot")],
+        [InlineKeyboardButton(text="Другое", callback_data="remove_profile_ans_other")],
+        [InlineKeyboardButton(text="Отмена ❌", callback_data="cancel_update")]]
+    ))
+
+
+async def remove_profile_score(callback_query: types.CallbackQuery, state: FSMContext):
+    reason_mapping = {
+        "remove_profile_ans_no_reson": "Не вижу смысла дальше пользоваться",
+        "remove_profile_ans_new_trainer": "Пользуюсь услугами тренера",
+        "remove_profile_ans_another_bot": "Пользуюсь альтернативным ботом",
+        "remove_profile_ans_other": "Другое"
+    }
+    await state.update_data(reson=reason_mapping.get(callback_query.data))
+    await callback_query.message.edit_text("Пожалуйста, перед уходом оцените нашего бота от 1 до 10:", reply_markup=create_cancel_button_keyboard())
+    await state.set_state(UpdateProfile.waiting_for_bot_score)
+
+
+async def remove_profile(message: types.Message, state: FSMContext):
+    if not message.text.isdigit() or not (1 <= int(message.text) <= 10):
+        await message.answer("Пожалуйста, укажите оценку числом от 1 до 10.")
+        return
+    await state.update_data(score=message.text)
+
+    user_id = message.from_user.id
+
+    if check_training(user_id):
+        remove_user(EXCEL_FILE_TRAINING, user_id)
+        remove_user(EXCEL_FILE_DIET, user_id)
+        remove_notifications(user_id)
+    remove_user(EXCEL_FILE, user_id)
+
+    user_data = await state.get_data()
+    df = pd.read_excel(REMOVED_USERS_EXCEL)
+    user_frame = pd.DataFrame([{
+        "ID": user_id,
+        "Reason": user_data["reson"],
+        "Score": user_data["score"]
+    }])
+    df = pd.concat([df, user_frame], ignore_index=True)
+    df.to_excel(REMOVED_USERS_EXCEL, index=False)
+
+    await message.answer("Ваш профиль успешно удалён.\nЖдём вашего возвращения 💝")
+
+    await state.clear()  # Завершаем FSM

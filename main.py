@@ -9,7 +9,7 @@ from src.registration import RegistrationStates, process_name, process_gender, p
 from src.survey_for_training import *
 from src.my_plan import show_plan
 from src.exercise_library import show_exercise_categories, handle_back_to_categories, handle_category_selection, handle_exercise_selection
-from src.my_profile import show_profile_info, start_update_profile, handle_field_selection, process_value_update, UpdateProfile, handle_gender_selection, cancel_update, handle_update_profile
+from src.my_profile import *
 from src.reminders import show_reminders_menu, enable_notifications, disable_notifications, on_startup
 from src.middleware_registration import RegistrationMiddleware
 from src.logging_middleware import LoggingMiddleware
@@ -88,9 +88,14 @@ dp.message.register(show_profile_info, F.text == "Мой профиль 👤")
 dp.message.register(start_update_profile, Command("update_profile"))
 dp.callback_query.register(handle_update_profile, F.data == "update_profile")
 dp.callback_query.register(handle_field_selection, F.data.startswith("update_"))
-dp.message.register(process_value_update, UpdateProfile.waiting_for_value)
+dp.message.register(process_value_update, UpdateProfile.waiting_for_update_value)
 dp.callback_query.register(handle_gender_selection, F.data.startswith("gender_"))
 dp.callback_query.register(cancel_update, F.data.startswith("cancel_"))
+
+# Удаление профиля
+dp.callback_query.register(remove_profile_reson, F.data == "remove_profile")
+dp.callback_query.register(remove_profile_score, F.data.startswith("remove_profile_ans_"))
+dp.message.register(remove_profile, UpdateProfile.waiting_for_bot_score)
 
 # Опрос после тренировки
 dp.message.register(open_workout_survey, F.text == "Опрос после тренировки 💬")
