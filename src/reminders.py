@@ -134,7 +134,7 @@ async def enable_notifications(callback_query: types.CallbackQuery, bot: Bot):
         # Создание задачи на основе времени
         scheduler.add_job(
             send_notification,
-            CronTrigger(hour=hour, minute=47),
+            CronTrigger(hour=hour, minute=0),
             args=[bot, user_id, hour],
             id=f"notification_{user_id}_{hour}",  # Уникальный ID задачи
             replace_existing=True                 # Заменить задачу, если ID совпадает
