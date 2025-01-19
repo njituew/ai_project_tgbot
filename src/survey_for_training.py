@@ -61,7 +61,7 @@ def create_location_keyboard():
     ])
 
 
-async def start_survey(message: types.Message): #, state: FSMContext):
+async def start_survey(message: types.Message):
     user_id = message.from_user.id
     if check_training(user_id):
         await message.answer(
@@ -77,7 +77,7 @@ async def new_training(callback_query: types.CallbackQuery, state: FSMContext):
     
     # Если мы пришли из my_plan.py
     if callback_query.data == "my_plan_new":
-        await callback_query.message.edit_text("Ваш предыдущий индивидуалный план удалён.")
+        await callback_query.message.edit_text("Ваш предыдущий индивидуалный план удалён. 🗑️")
         remove_user(EXCEL_FILE_TRAINING, user_id)
         remove_user(EXCEL_FILE_DIET, user_id)
         await callback_query.message.answer(
@@ -95,7 +95,7 @@ async def new_training(callback_query: types.CallbackQuery, state: FSMContext):
     
     # Если мы из "Создать тренировку" и нажали "НЕТ"
     else:   # survey_training_new_cancel
-        await callback_query.message.edit_text("Создание тренировки отменено ❌")
+        await callback_query.message.edit_text("Действие отменено ❌")
         await state.clear()  # Завершаем FSM
 
 
@@ -197,7 +197,7 @@ async def set_wishes(message: types.Message, state: FSMContext):
             f"{training_json}"
             f"Restarting...")
         await message.answer(
-            "Произоошла непредвиденная ошибка при генерации вашего расписания 🤔"
+            "Произошла непредвиденная ошибка при генерации вашего расписания 🤔"
             "Сейчас мы всё поправим...")
         await set_wishes(message, state)
 
@@ -207,4 +207,4 @@ async def remove_training(callback_query: types.CallbackQuery):
     remove_user(EXCEL_FILE_TRAINING, user_id)
     remove_user(EXCEL_FILE_DIET, user_id)
     remove_notifications(user_id)
-    await callback_query.message.edit_text("Ваш индивидуалный план удалён.")
+    await callback_query.message.edit_text("Ваш индивидуалный план удалён. 🗑️")

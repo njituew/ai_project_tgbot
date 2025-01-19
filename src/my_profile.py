@@ -241,7 +241,7 @@ async def handle_gender_selection(callback_query: types.CallbackQuery, state: FS
 
 
 async def cancel_update(callback_query: types.CallbackQuery, state: FSMContext):
-    await callback_query.message.edit_text("Обновление отменено ❌")
+    await callback_query.message.edit_text("Действие отменено ❌")
     await state.clear()
 
 
@@ -296,6 +296,6 @@ async def remove_profile(message: types.Message, state: FSMContext):
     df = pd.concat([df, user_frame], ignore_index=True)
     df.to_excel(REMOVED_USERS_EXCEL, index=False)
 
-    await message.answer("Ваш профиль успешно удалён.\nЖдём вашего возвращения 💝")
+    await message.answer("Ваш профиль успешно удалён. 🗑️\nЖдём вашего возвращения 💝")
 
     await state.clear()  # Завершаем FSM
