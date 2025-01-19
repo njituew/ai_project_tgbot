@@ -90,7 +90,7 @@ dp.callback_query.register(handle_update_profile, F.data == "update_profile")
 dp.callback_query.register(handle_field_selection, F.data.startswith("update_"))
 dp.message.register(process_value_update, UpdateProfile.waiting_for_update_value)
 dp.callback_query.register(handle_gender_selection, F.data.startswith("gender_"))
-dp.callback_query.register(cancel_update, F.data.startswith("cancel_"))
+dp.callback_query.register(cancel_update, F.data == "cancel_update")
 
 # Удаление профиля
 dp.callback_query.register(remove_profile_reson, F.data == "remove_profile")
