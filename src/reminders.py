@@ -4,6 +4,7 @@ from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from aiogram import Bot
 from apscheduler.triggers.cron import CronTrigger
 from apscheduler.jobstores.base import JobLookupError
+from src.workout_survey import check_user_in_answers_set
 import pandas as pd
 import datetime
 import time
@@ -26,30 +27,44 @@ def check_user_in_reminders(user_id: int) -> bool:
 
 
 def plan_for_today(user_id: int):
-    # Чтение файла
-    trainings_df = pd.read_excel(EXCEL_FILE_TRAINING)
-    diets_df = pd.read_excel(EXCEL_FILE_DIET)
-
-    # Строки с нужным ID
-    trainings_info = trainings_df[trainings_df["ID"] == user_id]
-    diets_info = diets_df[diets_df["ID"] == user_id]
-
-    # План на сегодня
-    trainings_text = trainings_info.iloc[0].get(datetime.datetime.today().strftime("%A").lower())
-    diets_text = diets_info.iloc[0].get(datetime.datetime.today().strftime("%A").lower())
-
     # Создаём сообщение
+    trainings_text = training_for_today(user_id)
     content = ""
+
     if pd.notna(trainings_text):
         content = "🏃‍♂️ Сегодня у вас запланирована тренировка:\n\n"
         content += trainings_text
+
     else:
         content = "Сегодня у вас не запланирована тренировка 🥱"
     
     content += "\n\n🍽 Рекомендации по питанию:\n\n"
-    content += diets_text
+    content += diet_for_today(user_id)
     
     return content
+
+
+def diet_for_today(user_id: int):
+    diets_df = pd.read_excel(EXCEL_FILE_DIET)
+
+    diets_info = diets_df[diets_df["ID"] == user_id]
+
+    diets_text = diets_info.iloc[0].get(datetime.datetime.today().strftime("%A").lower())
+
+    return diets_text
+
+
+def training_for_today(user_id: int):
+    # Чтение файла
+    trainings_df = pd.read_excel(EXCEL_FILE_TRAINING)
+
+    # Строки с нужным ID
+    trainings_info = trainings_df[trainings_df["ID"] == user_id]
+
+    # План на сегодня
+    trainings_text = trainings_info.iloc[0].get(datetime.datetime.today().strftime("%A").lower())
+
+    return trainings_text
 
 
 # Создание клавиатуры для выбора действия
@@ -73,6 +88,7 @@ async def show_reminders_menu(message: types.Message):
                 [InlineKeyboardButton(text="Создать тренировку 🏋️‍♂️", callback_data="reminders_new_training")]
             ])
         )
+
     else:
         keyboard = create_reminders_keyboard()
         state_text = ""
@@ -84,8 +100,31 @@ async def show_reminders_menu(message: types.Message):
 
 
 # Функция для отправки сообщения пользователю
-async def send_notification(bot: Bot, user_id: int):
-    await bot.send_message(chat_id=user_id, text=plan_for_today(user_id))
+async def send_notification(bot: Bot, user_id: int, time_of_message: int):
+    if time_of_message == hours[0]:
+        await bot.send_message(chat_id=user_id, text=plan_for_today(user_id))
+
+    else:
+        trainings_text = training_for_today(user_id)
+
+        if pd.notna(trainings_text) and check_user_in_answers_set(user_id):
+            content = ("Вы уже прошли опрос после тренировки 🌟"
+                       "\n\nНабирайтесь сил для следующего занятия и не забывайте про правильное питание!"
+                       "\n\n🍽 Рекомендации по питанию:\n\n")
+            content += diet_for_today(user_id)
+            await bot.send_message(chat_id=user_id, text=content)
+
+        elif pd.notna(trainings_text) and not check_user_in_answers_set(user_id):
+            content = ("Вы ещё не прошли опрос после тренировки. Может хотите сделать это прямо сейчас?\n\n"
+                       "❗️ Не забывайте фиксировать свою активность каждый день — так бот сможет помочь вам следить за достижениями")
+            keyboard = InlineKeyboardMarkup(inline_keyboard=[[InlineKeyboardButton(text="Пройти опрос 💬", callback_data="go_to_workout_survey")]])
+            await bot.send_message(chat_id=user_id, text=content, reply_markup=keyboard)
+
+        else:
+            content = ("Тренировки сегодня нет, но это не повод забывать о правильном питании!"
+                       "\n\n🍽 Рекомендации по питанию:\n\n")
+            content += diet_for_today(user_id)
+            await bot.send_message(chat_id=user_id, text=content)
 
 
 async def enable_notifications(callback_query: types.CallbackQuery, bot: Bot):
@@ -95,8 +134,8 @@ async def enable_notifications(callback_query: types.CallbackQuery, bot: Bot):
         # Создание задачи на основе времени
         scheduler.add_job(
             send_notification,
-            CronTrigger(hour=hour, minute=0),
-            args=[bot, user_id],
+            CronTrigger(hour=hour, minute=47),
+            args=[bot, user_id, hour],
             id=f"notification_{user_id}_{hour}",  # Уникальный ID задачи
             replace_existing=True                 # Заменить задачу, если ID совпадает
         )

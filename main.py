@@ -99,6 +99,7 @@ dp.message.register(remove_profile, UpdateProfile.waiting_for_bot_score)
 
 # Опрос после тренировки
 dp.message.register(open_workout_survey, F.text == "Опрос после тренировки 💬")
+dp.callback_query.register(open_workout_survey, F.data == "go_to_workout_survey")
 dp.callback_query.register(all_exercises, F.data == "all_exercises_are_completed")
 dp.callback_query.register(some_exercises, F.data == "some_exercises_are_completed")
 dp.callback_query.register(without_exercises, F.data == "not_today")
