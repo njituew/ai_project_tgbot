@@ -30,7 +30,7 @@ async def cmd_menu(message: types.Message):
         keyboard=[
             [KeyboardButton(text="Создать тренировку 🏋️‍♂️")],
             [KeyboardButton(text="Мой план 📋"), KeyboardButton(text="Напоминания ⏰")],
-            [KeyboardButton(text="Упражнения 📚")],
+            [KeyboardButton(text="Библиотека упражнений 📚")],
             [KeyboardButton(text="Мой профиль 👤"), KeyboardButton(text="Моя статистика 📈")],
             [KeyboardButton(text="Опрос после тренировки 💬")]
         ],
@@ -58,7 +58,7 @@ async def cmd_commands(message: types.Message):
 
 async def simple_message(message: types.Message, state: FSMContext):
     current_state = await state.get_state()
-    # Если пользователь находится в состоянии ожидания пожеланий, не обрабатываем это сообщение
+
     if current_state == TrainingStates.waiting_for_wishes:
         await set_wishes(message, state)
         return

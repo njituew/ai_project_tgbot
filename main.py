@@ -67,7 +67,7 @@ dp.callback_query.register(new_training, F.data == "my_plan_new")
 dp.callback_query.register(remove_training, F.data == "my_plan_remove")
 
 # Библиотека упражнений
-dp.message.register(show_exercise_categories, F.text == "Упражнения 📚")
+dp.message.register(show_exercise_categories, F.text == "Библиотека упражнений 📚")
 dp.message.register(show_exercise_categories, Command("exercises"))
 dp.callback_query.register(handle_category_selection, F.data.startswith("category_"))
 dp.callback_query.register(handle_exercise_selection, F.data.startswith("exercise_"))

@@ -1,5 +1,5 @@
 from langchain_gigachat import GigaChat
-from langchain_core.messages import HumanMessage, SystemMessage
+from langchain_core.messages import HumanMessage
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from dotenv import load_dotenv
 from src.utils import str_to_json
