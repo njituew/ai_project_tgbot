@@ -1,4 +1,4 @@
-from langchain_gigachat import GigaChat
+from langchain_mistralai import ChatMistralAI
 from langchain_core.messages import HumanMessage
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from dotenv import load_dotenv
@@ -11,8 +11,10 @@ from aiogram.types import Message
 # Загрузка переменных из .env
 load_dotenv()
 
-# Инициализация GigaChat
-chat = GigaChat(verify_ssl_certs=False, scope="GIGACHAT_API_PERS")
+# Инициализация
+chat = ChatMistralAI(
+    model="mistral-large-latest",
+)
 
 prompt_template = ChatPromptTemplate.from_messages(
     [
@@ -98,7 +100,7 @@ async def generate_schedule(data: dict, info: dict, user_id: int) -> None:
     
     config = {"configurable": {"thread_id": user_id}}
 
-    response = (await app.ainvoke({"messages": messages}, config))["messages"][-1]
+    response = (await app.ainvoke({"messages": messages, "response_format": {"type": "json_object"}}, config))["messages"][-1]
 
     try:
         result_json = str_to_json(response.content)
