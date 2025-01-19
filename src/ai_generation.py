@@ -40,16 +40,14 @@ SCHEDULE_TEMPLATE = """Составь грамотный план трениро
 В питании должно быть описание всех необходимых приёмов пищи.
 
 Json должен быть в формате:
-
 "monday":
     "workout": "1. Упражнение 1: количество подходов и повторений/время выполнения упражнения\n2. Упражнение 2: ..."
     "diet": "Завтрак: блюдо на завтрак\n..."
 "tuesday":
-    "workout": ""
-    "diet": ""
-
-и так далее все дни недели.
-В полях workout и diet должны быть str в которых между пунктами есть перенос строки.
+    "workout": ...
+    "diet": ...
+и так далее все дни недели (monday, tuesday, wednesday, thursday, friday, saturday, sunday).
+Названия полей в JSON менять нельзя. В полях workout и diet должны быть str в которых между пунктами есть перенос строки.
 
 Если в конкретный день тренировки нет, то для него "workout" оставляешь пустым,
 но диета должна быть расписана для каждого дня.
@@ -105,7 +103,7 @@ async def generate_schedule(data: dict, info: dict, user_id: int) -> None:
     try:
         result_json = str_to_json(response.content)
     except:
-        print(f"AI generation error.\nInput:\n{data=}\n{info=}\n\nOutput:\n{response.content}", flush=True)
+        print(f"String to JSON conversation error.\nInput:\n{data=}\n{info=}\n\nOutput:\n{response.content}", flush=True)
         result_json = generate_schedule(data, info, user_id)
 
     return result_json
@@ -126,4 +124,3 @@ async def simple_message_to_ai(message: Message, info: dict, training: dict) -> 
     config = {"configurable": {"thread_id": user_id}}
 
     return (await app.ainvoke({"messages": messages}, config))["messages"][-1].content
-    

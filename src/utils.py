@@ -58,8 +58,22 @@ def calculate_bmi(height: int, weight: int) -> float:
 Функция для преобразования ответа ИИ в json
 '''
 def str_to_json(raw_string: str):
-    clean_string = raw_string[7:-3]
-    parsed_json = json.loads(clean_string)
+    # Находим начало и конец JSON блока
+    start_index = raw_string.find("{")
+    end_index = raw_string.rfind("}") + 1
+    if start_index == -1 or end_index == -1:
+        raise ValueError("JSON не найден в строке")
+    
+    # Извлекаем JSON блок
+    json_block = raw_string[start_index:end_index]
+
+    # Удаляем лишние пробелы, многострочные кавычки и экранируем символы перевода строки
+    json_block = json_block.replace('"""', '"').replace("    ", "")
+
+    # Удаляем лишние пробелы между запятыми
+    json_block = json_block.replace(", ", ",")
+
+    parsed_json = json.loads(json_block)
     return parsed_json
 
 

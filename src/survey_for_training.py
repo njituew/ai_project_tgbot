@@ -153,43 +153,53 @@ async def set_wishes(message: types.Message, state: FSMContext):
     # Генерация плана тренировок
     training_json = await generate_schedule(user_data, user_info, user_id)
     
-    # Создание таблицы с тренировками
-    df = pd.read_excel(EXCEL_FILE_TRAINING)
-    training_data = pd.DataFrame([{
-        "ID": message.from_user.id,
-        "monday": training_json["monday"]["workout"],
-        "tuesday": training_json["tuesday"]["workout"],
-        "wednesday": training_json["wednesday"]["workout"],
-        "thursday": training_json["thursday"]["workout"],
-        "friday": training_json["friday"]["workout"],
-        "saturday": training_json["saturday"]["workout"],
-        "sunday": training_json["sunday"]["workout"]
-    }])
-    df = pd.concat([df, training_data], ignore_index=True)
-    df.to_excel(EXCEL_FILE_TRAINING, index=False)
-    
-    # Создание таблицы с диетой
-    df = pd.read_excel(EXCEL_FILE_DIET)
-    diet_data = pd.DataFrame([{
-        "ID": message.from_user.id,
-        "monday": training_json["monday"]["diet"],
-        "tuesday": training_json["tuesday"]["diet"],
-        "wednesday": training_json["wednesday"]["diet"],
-        "thursday": training_json["thursday"]["diet"],
-        "friday": training_json["friday"]["diet"],
-        "saturday": training_json["saturday"]["diet"],
-        "sunday": training_json["sunday"]["diet"]
-    }])
-    df = pd.concat([df, diet_data], ignore_index=True)
-    df.to_excel(EXCEL_FILE_DIET, index=False)
-    
-    await message.answer(
-        f"Ваша тренировка создана успешно! 👍\n\n"
-        f"/my_plan - посмотреть план тренировок\n"
-        f"/reminder - управление напоминаниями"
-    )
-    
-    await state.clear()  # Завершаем FSM
+    try:
+        # Создание таблицы с тренировками
+        df = pd.read_excel(EXCEL_FILE_TRAINING)
+        training_data = pd.DataFrame([{
+            "ID": message.from_user.id,
+            "monday": training_json["monday"]["workout"],
+            "tuesday": training_json["tuesday"]["workout"],
+            "wednesday": training_json["wednesday"]["workout"],
+            "thursday": training_json["thursday"]["workout"],
+            "friday": training_json["friday"]["workout"],
+            "saturday": training_json["saturday"]["workout"],
+            "sunday": training_json["sunday"]["workout"]
+        }])
+        df = pd.concat([df, training_data], ignore_index=True)
+        df.to_excel(EXCEL_FILE_TRAINING, index=False)
+        
+        # Создание таблицы с диетой
+        df = pd.read_excel(EXCEL_FILE_DIET)
+        diet_data = pd.DataFrame([{
+            "ID": message.from_user.id,
+            "monday": training_json["monday"]["diet"],
+            "tuesday": training_json["tuesday"]["diet"],
+            "wednesday": training_json["wednesday"]["diet"],
+            "thursday": training_json["thursday"]["diet"],
+            "friday": training_json["friday"]["diet"],
+            "saturday": training_json["saturday"]["diet"],
+            "sunday": training_json["sunday"]["diet"]
+        }])
+        df = pd.concat([df, diet_data], ignore_index=True)
+        df.to_excel(EXCEL_FILE_DIET, index=False)
+        
+        await message.answer(
+            f"Ваша тренировка создана успешно! 👍\n\n"
+            f"/my_plan - посмотреть план тренировок\n"
+            f"/reminder - управление напоминаниями"
+        )
+        
+        await state.clear()  # Завершаем FSM
+    except:
+        print(
+            f"Generating JSON error. JSON:\n"
+            f"{training_json}"
+            f"Restarting...")
+        await message.answer(
+            "Произоошла непредвиденная ошибка при генерации вашего расписания 🤔"
+            "Сейчас мы всё поправим...")
+        await set_wishes(message, state)
 
 
 async def remove_training(callback_query: types.CallbackQuery):
