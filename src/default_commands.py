@@ -71,7 +71,7 @@ async def simple_message(message: types.Message, state: FSMContext):
     user_id = message.from_user.id
     user_info = get_info(user_id)
     user_training = get_plan(user_id) if check_training(user_id) else {}
-    await message.answer(simple_message_to_ai(text, user_info, user_training))
+    await message.answer(await simple_message_to_ai(message, user_info, user_training))
 
 
 async def set_bot_commands(bot: Bot):

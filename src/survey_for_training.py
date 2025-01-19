@@ -151,7 +151,7 @@ async def set_wishes(message: types.Message, state: FSMContext):
     user_info = df[df["ID"] == user_id][["Gender", "Age", "Height", "Weight", "BMI"]].iloc[0].to_dict()
     
     # Генерация плана тренировок
-    training_json = generate_schedule(user_data, user_info)
+    training_json = await generate_schedule(user_data, user_info, user_id)
     
     # Создание таблицы с тренировками
     df = pd.read_excel(EXCEL_FILE_TRAINING)

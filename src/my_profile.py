@@ -12,10 +12,8 @@ def get_info(user_id: str) -> dict:
     df["ID"] = df["ID"].astype(str).str.strip()
     user_id = str(user_id).strip()
 
-    # Фильтруем строку по user_id
     user_data = df[df["ID"] == user_id]
 
-    # Убираем колонку ID, преобразуем в словарь
     return user_data.drop(columns=["ID"]).iloc[0].to_dict()
 
 
@@ -101,22 +99,18 @@ def update_user_info(user_id: str, field: str, value):
     df["ID"] = df["ID"].astype(str).str.strip()
     user_id = str(user_id).strip()
 
-    # Находим индекс строки с данным user_id
     user_index = df[df["ID"] == user_id].index
     if user_index.empty:
         raise ValueError("Пользователь не найден.")
 
-    # Обновляем значение
     df.loc[user_index, field] = value
 
-    # Пересчет BMI, если обновляется вес или рост
     if field in ["Weight", "Height"]:
         weight = float(df.loc[user_index, "Weight"].values[0])
         height = float(df.loc[user_index, "Height"].values[0])
         bmi = calculate_bmi(height, weight)
         df.loc[user_index, "BMI"] = bmi
 
-    # Сохраняем файл
     df.to_excel(EXCEL_FILE, index=False)
 
 
@@ -125,7 +119,7 @@ async def start_update_profile(message: types.Message):
     await message.answer("Что вы хотите изменить?", reply_markup=keyboard)
 
 
-async def handle_update_profile(callback_query: types.CallbackQuery, state: FSMContext):
+async def handle_update_profile(callback_query: types.CallbackQuery):
     await start_update_profile(callback_query.message)
     await callback_query.answer()
 
@@ -166,7 +160,6 @@ async def process_value_update(message: types.Message, state: FSMContext):
     value = message.text
 
     try:
-        # Валидация значений
         if field == "Age":
             if not value.isdigit():
                 await message.answer("Пожалуйста, укажите возраст числом:")
@@ -197,7 +190,6 @@ async def process_value_update(message: types.Message, state: FSMContext):
         }
         field1 = field_map1.get(field)
 
-        # Обновление информации
         update_user_info(user_id, field, value)
 
         if field in ["Height", "Weight"]:
