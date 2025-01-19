@@ -253,7 +253,7 @@ create_table(REMOVED_USERS_EXCEL, colums)
 async def remove_profile_reson(callback_query: types.CallbackQuery, state: FSMContext):
     await callback_query.message.edit_text("Пожалуйста, укажите причину, почему вы решили перестать пользоваться нашим ботом?",
         reply_markup=InlineKeyboardMarkup(inline_keyboard=[
-        [InlineKeyboardButton(text="Не вижу смысла дальше пользоваться", callback_data="remove_profile_ans_no_reson"), InlineKeyboardButton(text="Пользуюсь услугами тренера", callback_data="remove_profile_ans_new_trainer")],
+        [InlineKeyboardButton(text="Не вижу смысла", callback_data="remove_profile_ans_no_reson"), InlineKeyboardButton(text="Пользуюсь услугами тренера", callback_data="remove_profile_ans_new_trainer")],
         [InlineKeyboardButton(text="Пользуюсь альтернативным ботом", callback_data="remove_profile_ans_another_bot")],
         [InlineKeyboardButton(text="Другое", callback_data="remove_profile_ans_other")],
         [InlineKeyboardButton(text="Отмена ❌", callback_data="cancel_update")]]
