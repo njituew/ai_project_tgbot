@@ -22,6 +22,7 @@ from src.middlewares.authorization import AuthorizationMiddleware
 from src.middlewares.logging import LoggingMiddleware
 from src.utils import get_bot_token
 from src.workout_survey import open_workout_survey, some_exercises, defer_survey, without_exercises, all_exercises
+from src.my_statistics import generate_statistics
 
 
 '''
@@ -104,7 +105,12 @@ dp.callback_query.register(remove_profile_reson, F.data == "remove_profile")
 dp.callback_query.register(remove_profile_score, F.data.startswith("remove_profile_ans_"))
 dp.message.register(remove_profile, UpdateProfile.waiting_for_bot_score)
 
+# Моя статистика
+dp.message.register(generate_statistics, Command("my_statistics"))
+dp.message.register(generate_statistics, F.text == "Моя статистика 📈")
+
 # Опрос после тренировки
+dp.message.register(open_workout_survey, Command("survey_after_workout"))
 dp.message.register(open_workout_survey, F.text == "Опрос после тренировки 💬")
 dp.callback_query.register(open_workout_survey, F.data == "go_to_workout_survey")
 dp.callback_query.register(all_exercises, F.data == "all_exercises_are_completed")

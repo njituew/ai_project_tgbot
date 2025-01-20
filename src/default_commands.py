@@ -53,6 +53,8 @@ async def cmd_commands(message: types.Message):
         f"/reminder - Управление напоминаниями\n"
         f"/my_profile - Ваш профиль"
         f"/update_profile - Обновить профиль\n"
+        f"/my_statistics - Ваша статистика\n"
+        f"/survey_after_workout - Опрос после тренировки\n"
     )
 
 
@@ -62,15 +64,11 @@ async def simple_message(message: types.Message, state: FSMContext):
     if current_state == TrainingStates.waiting_for_wishes:
         await set_wishes(message, state)
         return
-    
-    text = message.text
-    if text in ("Моя статистика 📈"):
-        await message.answer(text)
-        return
 
     user_id = message.from_user.id
     user_info = get_info(user_id)
     user_training = get_plan(user_id) if check_training(user_id) else {}
+
     await message.answer(await simple_message_to_ai(message, user_info, user_training))
 
 
@@ -84,6 +82,8 @@ async def set_bot_commands(bot: Bot):
         BotCommand(command="reminder", description="Управление напоминаниями"),
         BotCommand(command="my_profile", description="Ваш профиль"),
         BotCommand(command="update_profile", description="Обновить профиль"),
+        BotCommand(command="my_statistics", description="Ваша статистика"),
+        BotCommand(command="survey_after_workout", description="Опрос после тренировки"),
         BotCommand(command="commands", description="Список команд бота"),
     ]
     await bot.set_my_commands(commands)
