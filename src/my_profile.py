@@ -154,7 +154,7 @@ async def handle_field_selection(callback_query: types.CallbackQuery, state: FSM
     elif field:
         await state.update_data(field=field)
         await callback_query.message.edit_text(f"Введите новое значение {field1}:", reply_markup=create_cancel_button_keyboard())
-        await state.set_state(UpdateProfile.waiting_for_value)
+        await state.set_state(UpdateProfile.waiting_for_update_value)
 
     await callback_query.answer()
 
