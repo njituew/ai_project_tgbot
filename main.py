@@ -6,10 +6,17 @@ from aiogram.filters import CommandStart, Command
 
 from src.default_commands import cmd_menu, cmd_start, cmd_commands, simple_message, set_bot_commands
 from src.registration import RegistrationStates, process_name, process_gender, process_age, process_height, process_weight
-from src.survey_for_training import *
+from src.survey_for_training import (
+    start_survey, new_training, set_goal, set_level, set_location, set_wishes, TrainingStates, remove_training
+)
 from src.my_plan import show_plan
-from src.exercise_library import show_exercise_categories, handle_back_to_categories, handle_category_selection, handle_exercise_selection
-from src.my_profile import *
+from src.exercise_library import (
+    show_exercise_categories, handle_back_to_categories, handle_category_selection, handle_exercise_selection
+)
+from src.my_profile import (
+    show_profile_info, start_update_profile, handle_update_profile, handle_field_selection, process_value_update, UpdateProfile,
+    handle_gender_selection, cancel_update, remove_profile_reson, remove_profile_score, remove_profile
+)
 from src.reminders import show_reminders_menu, enable_notifications, disable_notifications, on_startup
 from src.middlewares.authorization import AuthorizationMiddleware
 from src.middlewares.logging import LoggingMiddleware
