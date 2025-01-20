@@ -17,12 +17,12 @@ from src.my_profile import (
     show_profile_info, start_update_profile, handle_update_profile, handle_field_selection, process_value_update, UpdateProfile,
     handle_gender_selection, cancel_update, remove_profile_reson, remove_profile_score, remove_profile
 )
-from src.reminders import show_reminders_menu, enable_notifications, disable_notifications, on_startup
+from src.reminders import show_reminders_menu, enable_notifications, disable_notifications, on_startup_reminders
 from src.middlewares.authorization import AuthorizationMiddleware
 from src.middlewares.logging import LoggingMiddleware
 from src.utils import get_bot_token
 from src.workout_survey import open_workout_survey, some_exercises, defer_survey, without_exercises, all_exercises
-from src.my_statistics import generate_statistics
+from src.my_statistics import generate_statistics, on_startup_survey_after_training
 
 
 '''
@@ -125,7 +125,8 @@ dp.message.register(simple_message)
 # Запуск бота
 async def main():
     await set_bot_commands(bot)
-    await on_startup()
+    await on_startup_reminders()
+    await on_startup_survey_after_training()
     await dp.start_polling(bot)
 
 

@@ -1,13 +1,13 @@
 from aiogram import types
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
-from src.my_statistics import update_statistics_data
 from typing import Union
 import pandas as pd
 import datetime
 
 
 EXCEL_FILE_TRAINING = "data/trainings.xlsx"
+EXCEL_FILE_STATISTICS = "data/statistics.xlsx"
 
 scheduler = AsyncIOScheduler()
 users_with_answers = set()
@@ -15,6 +15,25 @@ users_with_answers = set()
 
 def remove_user_from_answers_set(user_id: int):
     users_with_answers.discard(user_id)
+
+
+def clean_answers_set():
+    midnight_decline_of_statistics()
+    users_with_answers.clear()
+
+
+def update_statistics_data(user_id: int, score: int):
+    df = pd.read_excel(EXCEL_FILE_STATISTICS)
+    user_index = df[df["ID"] == user_id].index
+
+    if user_index.empty:
+        raise ValueError("Пользователь не найден.")
+
+    df.loc[user_index, "answers"] += 1
+    df.loc[user_index, "score"] += score
+
+    df.to_excel(EXCEL_FILE_STATISTICS, index=False)
+
 
 # Проверка прошёл ли пользователь опрос
 def check_user_in_answers_set(user_id: int):
@@ -38,6 +57,15 @@ def training_for_today(user_id: int):
     trainings_text = trainings_info.iloc[0].get(datetime.datetime.today().strftime("%A").lower())
 
     return trainings_text
+
+
+def midnight_decline_of_statistics():
+    df = pd.read_excel(EXCEL_FILE_STATISTICS)
+
+    for user_id in df["ID"]:
+        if check_training(user_id):
+            if pd.notna(training_for_today(user_id)) and (user_id not in users_with_answers):
+                update_statistics_data(user_id, -5)
 
 
 # Создание опроса после тренировки

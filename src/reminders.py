@@ -166,5 +166,5 @@ def remove_notifications(user_id: int):
         notifications_enabled_users.discard(user_id)
 
 
-async def on_startup():
+async def on_startup_reminders():
     scheduler.start()
