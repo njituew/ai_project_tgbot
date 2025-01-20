@@ -13,6 +13,9 @@ scheduler = AsyncIOScheduler()
 users_with_answers = set()
 
 
+def remove_user_from_answers_set(user_id: int):
+    users_with_answers.discard(user_id)
+
 # Проверка прошёл ли пользователь опрос
 def check_user_in_answers_set(user_id: int):
     return user_id in users_with_answers
