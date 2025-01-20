@@ -2,6 +2,8 @@ from aiogram import BaseMiddleware
 from aiogram.types import Message, CallbackQuery
 from aiogram.fsm.context import FSMContext
 from src.registration import RegistrationStates, EXCEL_FILE
+from src.survey_for_training import TrainingStates
+from src.my_profile import UpdateProfile
 import pandas as pd
 
 
@@ -52,6 +54,30 @@ class AuthorizationMiddleware(BaseMiddleware):
                     await event.answer("Вы не завершили регистрацию. Пожалуйста, завершите её, чтобы продолжить.")
                     return  # Прерываем обработку команды
                 return await handler(event, data)  # Пропускаем текстовые сообщения
+            
+            button_texts = [
+                "Создать тренировку 🏋️‍♂️", "Мой план 📋", "Библиотека упражнений 📚",
+                "Напоминания ⏰", "Мой профиль 👤", "Моя статистика 📈", "Опрос после тренировки 💬"
+            ]
+            
+            if state == TrainingStates.waiting_for_wishes:
+                if isinstance(event, Message) and (event.text.startswith("/") or event.text in button_texts):
+                    await event.answer("Вы не завершили создание тренировки. Пожалуйста, завершите её, чтобы продолжить.")
+                    return
+                return await handler(event, data)
+            
+            if state == UpdateProfile.waiting_for_update_value:
+                if isinstance(event, Message) and (event.text.startswith("/") or event.text in button_texts):
+                    await event.answer("Вы не завершили обновление профиля. Пожалуйста, завершите его, чтобы продолжить.")
+                    return
+                return await handler(event, data)
+            
+            if state == UpdateProfile.waiting_for_bot_score:
+                if isinstance(event, Message) and event.text.startswith("/"):
+                    await event.answer("Вы не завершили оценку бота. Пожалуйста, завершите её, чтобы продолжить.")
+                    return
+                return await handler(event, data)
+                
 
         # Проверяем регистрацию пользователя через кэш
         if not await check_registered_boolean(user_id):
