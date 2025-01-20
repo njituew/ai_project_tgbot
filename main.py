@@ -11,8 +11,8 @@ from src.my_plan import show_plan
 from src.exercise_library import show_exercise_categories, handle_back_to_categories, handle_category_selection, handle_exercise_selection
 from src.my_profile import *
 from src.reminders import show_reminders_menu, enable_notifications, disable_notifications, on_startup
-from middlewares.authorization import AuthorizationMiddleware
-from middlewares.logging import LoggingMiddleware
+from src.middlewares.authorization import AuthorizationMiddleware
+from src.middlewares.logging import LoggingMiddleware
 from src.utils import get_bot_token
 from src.workout_survey import open_workout_survey, some_exercises, defer_survey, without_exercises, all_exercises
 
