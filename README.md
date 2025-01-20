@@ -41,7 +41,7 @@ python3 -m venv .venv
 Установите необходимые библиотеки:
 
 ```bash
-pip install -r requirements.txt
+pip install -r requirements.txt --no-deps
 ```
 
 ### 4. Настройка окружения
