@@ -59,11 +59,14 @@ async def handle_exercise_selection(callback_query: types.CallbackQuery):
     for category, exercises in exercise_categories.items():
         if callback_query.data in exercises:
             exercise_info = format_exercise_info(callback_query.data, exercises)
-            # Редактируем сообщение и сохраняем текущую клавиатуру
-            await callback_query.message.edit_text(
-                text=f"{exercise_info}\n\nВыберите другое упражнение, если хотите:",
-                reply_markup=callback_query.message.reply_markup,  # Сохраняем текущую клавиатуру
-            )
+
+            # Проверка на изменения текста
+            new_text = f"{exercise_info}\n\nВыберите другое упражнение, если хотите:"
+            if callback_query.message.text != new_text:
+                await callback_query.message.edit_text(
+                    text=new_text,
+                    reply_markup=callback_query.message.reply_markup,
+                )
             await callback_query.answer()  # Убираем "часы"
             return
 
