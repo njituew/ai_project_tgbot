@@ -4,6 +4,7 @@ from aiogram import types
 from aiogram.fsm.context import FSMContext
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 from aiogram.fsm.state import State, StatesGroup
+from src.my_statistics import add_ID_to_statistics
 
 
 # Путь к файлу Excel
@@ -93,10 +94,12 @@ async def process_weight(message: types.Message, state: FSMContext):
     await state.update_data(weight=int(message.text))
     user_data = await state.get_data()
 
+    user_id = message.from_user.id
+
     # Сохранение данных в Excel
     df = pd.read_excel(EXCEL_FILE)
     new_data = pd.DataFrame([{
-        "ID": message.from_user.id,
+        "ID": user_id,
         "Name": user_data["name"],
         "Gender": user_data["gender"],
         "Age": user_data["age"],
@@ -106,6 +109,8 @@ async def process_weight(message: types.Message, state: FSMContext):
     }])
     df = pd.concat([df, new_data], ignore_index=True)
     df.to_excel(EXCEL_FILE, index=False)
+
+    add_ID_to_statistics(user_id)
 
     await message.answer(
         """Спасибо за регистрацию! Ваши данные сохранены.\nЗадайте мне вопрос, связанный со спортом, или создайте свой индивидуальный план тренировок.\n\n/menu - открыть меню бота"""

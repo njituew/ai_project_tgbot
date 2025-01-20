@@ -3,6 +3,7 @@ from src.registration import EXCEL_FILE
 from src.utils import calculate_bmi, create_table, remove_user
 from src.survey_for_training import check_training, EXCEL_FILE_TRAINING, EXCEL_FILE_DIET
 from src.reminders import remove_notifications
+from src.my_statistics import EXCEL_FILE_STATISTICS
 import pandas as pd
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 from aiogram.fsm.state import StatesGroup, State
@@ -285,6 +286,7 @@ async def remove_profile(message: types.Message, state: FSMContext):
         remove_user(EXCEL_FILE_DIET, user_id)
         remove_notifications(user_id)
     remove_user(EXCEL_FILE, user_id)
+    remove_user(EXCEL_FILE_STATISTICS, user_id)
 
     user_data = await state.get_data()
     df = pd.read_excel(REMOVED_USERS_EXCEL)

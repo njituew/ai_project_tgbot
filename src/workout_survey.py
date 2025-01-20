@@ -1,6 +1,7 @@
 from aiogram import types
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
+from src.my_statistics import update_statistics_data
 from typing import Union
 import pandas as pd
 import datetime
@@ -82,6 +83,7 @@ async def some_exercises(callback_query: types.CallbackQuery):
                                            "\nВ следующий раз попробуйте завершить все упражнения. "
                                            "Если есть сложности, напишите, чем я могу помочь.")
     users_with_answers.add(user_id)
+    update_statistics_data(user_id, 5)
 
 
 # Функция для ответа "Да, все"
@@ -91,6 +93,7 @@ async def all_exercises(callback_query: types.CallbackQuery):
     await callback_query.message.edit_text("Отлично, вы молодец! 🎉"
                                            "\nПродолжайте в том же духе. Помните: регулярность — ключ к успеху! 🚀")
     users_with_answers.add(user_id)
+    update_statistics_data(user_id, 10)
 
 
 # Функция для ответа "Сегодня без тренировки"
@@ -100,6 +103,7 @@ async def without_exercises(callback_query: types.CallbackQuery):
     await callback_query.message.edit_text("Ничего страшного, отдых — тоже важная часть тренировочного процесса! 🛌\n"
                                            "Не забывайте возвращаться к тренировкам, как только будете готовы 😊")
     users_with_answers.add(user_id)
+    update_statistics_data(user_id, -5)
 
 
 # Функция для ответа "Пройти опрос позже"
