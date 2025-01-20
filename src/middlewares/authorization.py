@@ -5,21 +5,9 @@ from src.registration import RegistrationStates, EXCEL_FILE
 import pandas as pd
 
 
-# Кэш для зарегистрированных пользователей
-REGISTERED_USERS_CACHE = set()
-
-
 async def check_registered_boolean(user_id: str) -> bool:
-    # Проверяем пользователя в кэше
-    if user_id in REGISTERED_USERS_CACHE:
-        return True
-
-    # Если пользователя нет в кэше, проверяем в Excel
     df = pd.read_excel(EXCEL_FILE)
     is_registered = not df[df["ID"] == user_id].empty
-
-    if is_registered:
-        REGISTERED_USERS_CACHE.add(user_id)
     
     return is_registered
 
