@@ -1,4 +1,6 @@
 import pandas as pd
+import random
+import asyncio
 
 from src.utils import create_table, remove_user
 from src.reminders import remove_notifications
@@ -17,8 +19,26 @@ EXCEL_FILE_DIET = "data/diets.xlsx"
 
 # Созданиец таблиц
 colums = ["ID", "monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"]
-create_table(EXCEL_FILE_TRAINING, colums)   # тренировки
-create_table(EXCEL_FILE_DIET, colums)       # диеты
+create_table(EXCEL_FILE_TRAINING, colums)
+create_table(EXCEL_FILE_DIET, colums)
+
+
+SPORT_QUOTES = [
+    "Дорогу осилит идущий 🏃‍♂️",
+    "В жизни всегда есть две дороги: одна — первая, а другая — вторая. 🚶‍♂️",
+    "Мы должны оставаться мыми, а они – оними. 🏋️‍♂️",
+    "Работа — это не волк. Работа — ворк. А волк — это ходить. 🐺",
+    "Марианскую впадину знаешь? Это я упал. 🏊‍♂️",
+    "Как говорил мой дед, «Я твой дед».",
+    "Слово — не воробей. Вообще ничто не воробей, кроме самого воробья. 🐦",
+    "Все будет хорошо, если не будет хуже. 🤞",
+    "Работа не волк. Никто не волк. Только волк волк. 🐺",
+    "Если закрыть глаза, становится темно. 🌚",
+    "Тут — это вам не там. 🤷‍♂️",
+    "Чистые пруды знаешь? Я почистил. 🏞️",
+    "Слово пацана знаешь? Я сказал. 🤙",
+    "Нужно делать как нужно, как не нужно — не нужно. 🤔",
+]
 
 
 def check_training(user_id: str) -> bool:
@@ -59,6 +79,18 @@ def create_location_keyboard():
         [InlineKeyboardButton(text="Дом 🏠", callback_data="location_home")],
         [InlineKeyboardButton(text="Тренажерный зал 🏋️", callback_data="location_gym")]
     ])
+
+
+async def update_message_with_quotes(sent_message: types.Message, stop_event: asyncio.Event):
+    while not stop_event.is_set():
+        quote = random.choice(SPORT_QUOTES)
+
+        try:
+            await sent_message.edit_text(f"Создание персонального плана тренировок... ⚙️\n\n{quote}")
+        except Exception:
+            pass
+
+        await asyncio.sleep(5)
 
 
 async def start_survey(message: types.Message):
@@ -141,7 +173,12 @@ async def set_location(callback_query: types.CallbackQuery, state: FSMContext):
 
 async def set_wishes(message: types.Message, state: FSMContext):
     await state.update_data(wishes=message.text)
-    await message.answer("Создание персонального плана тренировок... ⚙️")
+    sent_message = await message.answer("Создание персонального плана тренировок... ⚙️")
+
+    # Создаем событие для остановки обновления цитат
+    stop_event = asyncio.Event()
+    quote_task = asyncio.create_task(update_message_with_quotes(sent_message, stop_event))
+
 
     user_data = await state.get_data()
     
@@ -183,7 +220,12 @@ async def set_wishes(message: types.Message, state: FSMContext):
         }])
         df = pd.concat([df, diet_data], ignore_index=True)
         df.to_excel(EXCEL_FILE_DIET, index=False)
+
+        # Останавливаем вывод цитат
+        stop_event.set()
+        await quote_task
         
+        await sent_message.delete()
         await message.answer(
             f"Ваша тренировка создана успешно! 👍\n\n"
             f"/my_plan - посмотреть план тренировок\n"
@@ -199,6 +241,9 @@ async def set_wishes(message: types.Message, state: FSMContext):
         await message.answer(
             "Произошла непредвиденная ошибка при генерации вашего расписания 🤔"
             "Сейчас мы всё поправим...")
+        # Останавливаем обновление сообщения
+        stop_event.set()
+        await quote_task
         await set_wishes(message, state)
 
 
