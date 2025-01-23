@@ -40,8 +40,8 @@ async def generate_statistics(message: Message):
     if user_data.empty:
         raise ValueError("Пользователь не найден.")
 
-    data = {"completed_surveys_count": user_data["answers"], "total_score": user_data["score"]}
-
+    data = {"completed_surveys_count": user_data["answers"].values[0], "total_score": user_data["score"].values[0]}
+    
     await message.answer(await generate_statistics_request(data, user_id))
 
 
