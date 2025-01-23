@@ -1,12 +1,16 @@
+import pandas as pd
+import time
+import asyncio
+
 from aiogram.types import Message
+
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from apscheduler.triggers.cron import CronTrigger
+
 from src.utils import create_table
 from src.ai_generation import generate_statistics_request
 from src.workout_survey import clean_answers_set, EXCEL_FILE_STATISTICS
-import pandas as pd
-import time
-
+from src.utils import update_message_with_quotes
 
 scheduler = AsyncIOScheduler()
 localtime_offset = time.localtime().tm_gmtoff // 3600
@@ -21,7 +25,7 @@ async def daily_updating_of_set():
 scheduler.add_job(
         daily_updating_of_set,
         CronTrigger(hour=(21+localtime_offset) % 24, minute=0)
-    )
+)
 
 
 def add_ID_to_statistics(user_id: int):
@@ -33,6 +37,11 @@ def add_ID_to_statistics(user_id: int):
 
 async def generate_statistics(message: Message):
     df = pd.read_excel(EXCEL_FILE_STATISTICS)
+    sent_message = await message.answer("Расчет статистики... ⚙️")
+
+    # Создаем событие для остановки обновления цитат
+    stop_event = asyncio.Event()
+    quote_task = asyncio.create_task(update_message_with_quotes(sent_message, stop_event, "Расчет статистики..."))
 
     user_id = message.from_user.id
     user_data = df[df["ID"] == user_id]
@@ -42,7 +51,14 @@ async def generate_statistics(message: Message):
 
     data = {"completed_surveys_count": user_data["answers"].values[0], "total_score": user_data["score"].values[0]}
     
-    await message.answer(await generate_statistics_request(data, user_id))
+    answer = await generate_statistics_request(data, user_id)
+
+    # Останавливаем вывод цитат
+    stop_event.set()
+    await quote_task
+
+    await sent_message.delete()
+    await message.answer(answer)
 
 
 async def on_startup_survey_after_training():

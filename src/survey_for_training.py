@@ -1,10 +1,10 @@
 import pandas as pd
-import random
 import asyncio
 
 from src.utils import create_table, remove_user
 from src.reminders import remove_notifications
 from src.ai_generation import generate_schedule
+from src.utils import update_message_with_quotes
 
 from aiogram.fsm.state import State, StatesGroup
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
@@ -21,24 +21,6 @@ EXCEL_FILE_DIET = "data/diets.xlsx"
 colums = ["ID", "monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"]
 create_table(EXCEL_FILE_TRAINING, colums)
 create_table(EXCEL_FILE_DIET, colums)
-
-
-SPORT_QUOTES = [
-    "Дорогу осилит идущий 🏃‍♂️",
-    "В жизни всегда есть две дороги: одна — первая, а другая — вторая. 🚶‍♂️",
-    "Мы должны оставаться мыми, а они – оними. 🏋️‍♂️",
-    "Работа — это не волк. Работа — ворк. А волк — это ходить. 🐺",
-    "Марианскую впадину знаешь? Это я упал. 🏊‍♂️",
-    "Как говорил мой дед, «Я твой дед».",
-    "Слово — не воробей. Вообще ничто не воробей, кроме самого воробья. 🐦",
-    "Все будет хорошо, если не будет хуже. 🤞",
-    "Работа не волк. Никто не волк. Только волк волк. 🐺",
-    "Если закрыть глаза, становится темно. 🌚",
-    "Тут — это вам не там. 🤷‍♂️",
-    "Чистые пруды знаешь? Я почистил. 🏞️",
-    "Слово пацана знаешь? Я сказал. 🤙",
-    "Нужно делать как нужно, как не нужно — не нужно. 🤔",
-]
 
 
 def check_training(user_id: str) -> bool:
@@ -79,18 +61,6 @@ def create_location_keyboard():
         [InlineKeyboardButton(text="Дом 🏠", callback_data="location_home")],
         [InlineKeyboardButton(text="Тренажерный зал 🏋️", callback_data="location_gym")]
     ])
-
-
-async def update_message_with_quotes(sent_message: types.Message, stop_event: asyncio.Event):
-    while not stop_event.is_set():
-        quote = random.choice(SPORT_QUOTES)
-
-        try:
-            await sent_message.edit_text(f"Создание персонального плана тренировок... ⚙️\n\n{quote}")
-        except Exception:
-            pass
-
-        await asyncio.sleep(5)
 
 
 async def start_survey(message: types.Message):
@@ -177,8 +147,7 @@ async def set_wishes(message: types.Message, state: FSMContext):
 
     # Создаем событие для остановки обновления цитат
     stop_event = asyncio.Event()
-    quote_task = asyncio.create_task(update_message_with_quotes(sent_message, stop_event))
-
+    quote_task = asyncio.create_task(update_message_with_quotes(sent_message, stop_event, "Создание персонального плана тренировок..."))
 
     user_data = await state.get_data()
     
