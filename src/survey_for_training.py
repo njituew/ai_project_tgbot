@@ -31,6 +31,7 @@ def check_training(user_id: str) -> bool:
 
 class TrainingStates(StatesGroup):
     waiting_for_wishes = State()
+    creating_training_plan = State()
 
 
 def create_new_training_keyboard():
@@ -143,6 +144,7 @@ async def set_location(callback_query: types.CallbackQuery, state: FSMContext):
 
 async def set_wishes(message: types.Message, state: FSMContext):
     await state.update_data(wishes=message.text)
+    await state.set_state(TrainingStates.creating_training_plan)
     sent_message = await message.answer("Создание персонального плана тренировок... ⚙️")
 
     # Создаем событие для остановки обновления цитат

@@ -18,12 +18,13 @@ from src.my_profile import (
     handle_gender_selection, cancel_update, remove_profile_reson, remove_profile_score, remove_profile
 )
 from src.reminders import show_reminders_menu, enable_notifications, disable_notifications, on_startup_reminders
-from src.middlewares.authorization import AuthorizationMiddleware
-from src.middlewares.logging import LoggingMiddleware
 from src.utils import get_bot_token
 from src.workout_survey import open_workout_survey, some_exercises, defer_survey, without_exercises, all_exercises
 from src.my_statistics import generate_statistics, on_startup_survey_after_training
 
+from src.middlewares.authorization import AuthorizationMiddleware
+from src.middlewares.logging import LoggingMiddleware
+from src.middlewares.state_protection import StateProtectionMiddleware
 
 '''
     Загрузка токена бота из файла .env
@@ -36,7 +37,6 @@ TOKEN = get_bot_token()
 bot = Bot(token=TOKEN)
 dp = Dispatcher(storage=MemoryStorage())
 
-
 '''
 Регистрация ручек
 '''
@@ -46,6 +46,8 @@ dp.message.middleware(AuthorizationMiddleware())
 dp.callback_query.middleware(AuthorizationMiddleware())
 dp.message.middleware(LoggingMiddleware())
 dp.callback_query.middleware(LoggingMiddleware())
+dp.message.middleware(StateProtectionMiddleware())
+dp.callback_query.middleware(StateProtectionMiddleware())
 
 # Стандартные команды
 dp.message.register(cmd_start, CommandStart())
